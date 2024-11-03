@@ -8,55 +8,111 @@
 </head>
 <body>
 <div id="app">
-    <h1 class="sql_h1">SQL生成</h1>
-    <p class="sql_p">快速生成SQL和模拟数据，大幅提高开发测试效率！</p>
-    <el-row class="row_box"
-            :gutter="24">
-        <el-col :span="12">
-            <el-card class="box-card">
-                <div slot="header" class="clearfix">
-                    <span>输入配置</span>
-                    <el-select class="select" v-model="dbtype_value" placeholder="请选择">
-                        <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                        </el-option>
-                    </el-select>
-                </div>
-                <div>
-                    <el-form ref="form" :model="form" label-width="120px">
-                        <el-form-item label="库名">
-                            <el-input v-model="form.database" placeholder="库名：多个单词词建议用下划线分隔"></el-input>
-                        </el-form-item>
-                        <el-form-item label="表名" required>
-                            <el-input v-model="form.table" placeholder="test_table"></el-input>
-                        </el-form-item>
-                        <el-form-item label="表注释">
-                            <el-input v-model="form.tableComment" placeholder="描述表的中文名称、作用等"></el-input>
-                        </el-form-item>
-                        <el-form-item >
-                            <el-button width="100%" plain icon="el-icon-plus">新增字段</el-button>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button width="100%" plain icon="el-icon-plus">新增通用字段</el-button>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button width="100%" type="primary" @click="onGenerate">一键生成</el-button>
-                        </el-form-item>
+    <el-container>
+        <el-header height="100px">
+            <el-menu
+                    :default-active="activeIndex"
+                    class="el-menu-demo"
+                    mode="horizontal"
+                    @select="handleSelect"
+            >
+                <!-- Logo 图片 -->
+                <el-menu-item index="logo">
+                    <img src="static/fatherfocode.png" class="logo" href="#"/>
+                </el-menu-item>
 
-                    </el-form>
-                    <div class="login-register" style="text-align: center; margin-top: 20px;">
-                        请先 <a href="#">登录</a> 或 <a href="#">注册</a>
-                    </div>
-                </div>
-            </el-card>
-        </el-col>
-        <el-col :span="12">
-            <el-card class="box-card"></el-card>
-        </el-col>
-    </el-row>
+                <!-- 其他菜单项 -->
+                <el-menu-item index="1">首页</el-menu-item>
+                <el-menu-item index="2">关于我们</el-menu-item>
+                <el-menu-item index="3">服务</el-menu-item>
+                <el-menu-item index="4">联系我们</el-menu-item>
+            </el-menu>
+
+        </el-header>
+        <el-main height="600px">
+            <el-row :gutter="20">
+                <el-col :span="12">
+                    <el-card class="box-card">
+                        <!--头部信息-->
+                        <div slot="header" class="clearfix">
+                            <span>输入配置</span>
+                            <el-select class="select" v-model="db_type_value" placeholder="请选择">
+                                <el-option
+                                        v-for="item in db_type_list"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <!--表单信息-->
+                        <div>
+                            <el-form ref="form" :model="form">
+                                <el-form-item label="库名">
+                                    <el-input v-model="form.database"
+                                              placeholder="库名：多个单词词建议用下划线分隔"></el-input>
+                                </el-form-item>
+                                <el-form-item label="表名" required>
+                                    <el-input v-model="form.table" placeholder="test_table"></el-input>
+                                </el-form-item>
+                                <el-form-item label="表注释">
+                                    <el-input v-model="form.tableComment"
+                                              placeholder="描述表的中文名称、作用等"></el-input>
+                                </el-form-item>
+
+                                <el-form-item>
+                                    <el-button class="add_btn" plain icon="el-icon-plus">新增字段</el-button>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button class="add_btn" plain icon="el-icon-plus">导入字段</el-button>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button class="add_btn" plain icon="el-icon-plus">新增通用字段</el-button>
+                                </el-form-item>
+
+                                <el-form-item>
+                                    <el-button type="primary">一键生成</el-button>
+                                    <el-button>保存表</el-button>
+                                    <el-button>重置</el-button>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                    </el-card>
+                </el-col>
+                <el-col :span="12">
+                    <el-card class="box-card">
+                        <!--头部信息-->
+                        <div slot="header" class="clearfix">
+                            <span>生成结果</span>
+                        </div>
+
+                        <div>
+                            <el-empty v-if="!return_results" description="结果为空"></el-empty>
+                            <div v-else>
+                                <el-input
+                                        v-model="return_results"
+                                        type="textarea"
+                                        rows="26"
+                                        resize="none"
+                                        placeholder="请输入内容"
+                                        maxlength="3000"
+                                        readonly
+                                        @paste.native.capture.prevent="handleFalse"
+                                        @cut.native.capture.prevent="handleFalse"
+                                        :class="return_results ? 'return_results' : ''"
+                                ></el-input>
+                            </div>
+                        </div>
+                    </el-card>
+                </el-col>
+            </el-row>
+        </el-main>
+        <el-footer>
+            <p>站长： jerry mouse <i class="el-icon-document-delete"></i> <a href="mailto:3431193795@qq.com">意见反馈</a>
+            </p>
+            <p>版权所有：jerry mouse</p>
+        </el-footer>
+    </el-container>
 </div>
 </body>
 <!-- import Vue before Element -->
@@ -68,13 +124,17 @@
         el: '#app',
         data() {
             return {
+                activeIndex: '1',
                 form: {
                     database: '',
                     table: '',
-                    tableComment: ''
+                    tableComment: '',
+                    dynamicItem: [
+                        {column_name: '',}
+                    ]
                 },
-                dbtype_value: 1,
-                options: [
+                db_type_value: 1,
+                db_type_list: [
                     {
                         value: 1,
                         label: 'MySQL'
@@ -91,12 +151,14 @@
                         value: 4,
                         label: 'PostgreSQL'
                     }
-                ]
+                ],
+                return_results: null
             };
         },
         methods: {
-            onGenerate() {
-                alert('配置已保存并生成！');
+            handleFalse(e) {
+                // 阻止粘贴和剪切事件
+                e.preventDefault();
             }
         }
     });

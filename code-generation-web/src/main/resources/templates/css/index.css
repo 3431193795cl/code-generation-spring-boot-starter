@@ -1,52 +1,32 @@
-.el-row {
-    margin-bottom: 20px;
-
-    &:last-child {
-        margin-bottom: 0;
-    }
+/*头部样式 start*/
+.logo {
+    width: 100px;
+    height: 100px;
 }
 
-.el-col {
-    border-radius: 4px;
+/*主题样式*/
+.select {
+    margin-left: 60%;
 }
 
-.bg-purple-dark {
-    background: #99a9bf;
+.add_btn {
+    width: 100%;
+    min-height: 28px;
 }
 
-.bg-purple {
-    background: #d3dce6;
+.return_results {
+    background-color: #000;
+    color: #2090c6
 }
 
-.bg-purple-light {
-    background: #e5e9f2;
+/*底部样式 start*/
+p {
+    text-align: center;
+    color: #777777;
+    font-size: 12px
 }
 
-.grid-content {
-    border-radius: 4px;
-    min-height: 36px;
-}
-
-.row-bg {
-    padding: 10px 0;
-    background-color: #f9fafc;
-}
-
-.sql_h1 {
-    color: #333;
-}
-
-.sql_p {
-    text-align: left;
-    color: #777;
-}
-
-.row_box {
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-.select{
-    margin-left: 40%;
+p a {
+    text-decoration: none;
+    color: #777777
 }
