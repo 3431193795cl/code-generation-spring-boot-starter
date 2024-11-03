@@ -1,6 +1,6 @@
 package org.jerry.code.service.impl;
 
-import org.jerry.code.config.LogProperties;
+import org.jerry.code.config.CodeGenerationProperties;
 import org.jerry.code.config.TableEntityDTO;
 import org.jerry.code.service.IOperLogService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class OperLogServiceImpl implements IOperLogService {
     private JdbcTemplate jdbcTemplate;
 
     @Resource
-    private LogProperties conf;
+    private CodeGenerationProperties conf;
 
     @SuppressWarnings("all")
     @Override

@@ -14,11 +14,11 @@ import javax.annotation.Resource;
 
 @Configuration
 @ConditionalOnClass(value = {IOperLogService.class, OperLogServiceImpl.class})
-@EnableConfigurationProperties(LogProperties.class)//ioc注入
-public class LogAutoConfigure implements WebMvcConfigurer {
+@EnableConfigurationProperties(CodeGenerationProperties.class)//ioc注入
+public class CodeGenerationAutoConfigure implements WebMvcConfigurer {
 
     @Resource
-    private LogProperties dbScanClass;
+    private CodeGenerationProperties dbScanClass;
 
     @Bean
     @ConditionalOnMissingBean
