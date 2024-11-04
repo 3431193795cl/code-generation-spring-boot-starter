@@ -59,21 +59,89 @@
                                     <el-input v-model="form.tableComment"
                                               placeholder="描述表的中文名称、作用等"></el-input>
                                 </el-form-item>
-
+                                <div v-for="(item, index) in form.dynamicItem" :key="index">
+                                    <el-collapse @change="handleChange">
+                                        <el-collapse-item :name="index">
+                                            <!--title 信息-->
+                                            <template slot="title">
+                                                <el-col :span="6">
+                                                    <el-input v-model="item.column_name"
+                                                              placeholder="列名"></el-input>
+                                                </el-col>
+                                                <el-col :span="4" :offset="14">
+                                                    <el-button type="text">保存</el-button>
+                                                    <el-button type="text" style="color: #ff0000"
+                                                               @click="delField(item)">删除
+                                                    </el-button>
+                                                </el-col>
+                                            </template>
+                                            <!--主要信息-->
+                                            <div style="background-color: #e4e4e4">
+                                                <el-col :span="8">
+                                                    <el-form-item label="字段类型">
+                                                        <el-input v-model="item.field_type"
+                                                                  placeholder="如：varchar(225)"></el-input>
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8">
+                                                    <el-form-item label="默认值">
+                                                        <el-input v-model="item.field_default"
+                                                                  placeholder="如：varchar(225)"></el-input>
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8">
+                                                    <el-form-item label="注释">
+                                                        <el-input v-model="item.field_annotate"
+                                                                  placeholder="如：varchar(225)"></el-input>
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8">
+                                                    <el-form-item label="onUpdate">
+                                                        <el-input v-model="item.field_on_update"
+                                                                  placeholder="如：varchar(225)"></el-input>
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="8" style="margin-top: 38px">
+                                                    <el-col :span="8">
+                                                        <el-form-item label="非空">
+                                                            <el-checkbox v-model="item.is_null">
+                                                            </el-checkbox>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                    <el-col :span="8">
+                                                        <el-form-item label="主键">
+                                                            <el-checkbox v-model="item.primary_key">
+                                                            </el-checkbox>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                    <el-col :span="8">
+                                                        <el-form-item label="自增">
+                                                            <el-checkbox v-model="item.increment">
+                                                            </el-checkbox>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                </el-col>
+                                            </div>
+                                        </el-collapse-item>
+                                    </el-collapse>
+                                </div>
                                 <el-form-item>
-                                    <el-button class="add_btn" plain icon="el-icon-plus">新增字段</el-button>
+                                    <el-button class="add_btn" plain icon="el-icon-plus" @click="addField">新增字段
+                                    </el-button>
                                 </el-form-item>
                                 <el-form-item>
                                     <el-button class="add_btn" plain icon="el-icon-plus">导入字段</el-button>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button class="add_btn" plain icon="el-icon-plus">新增通用字段</el-button>
+                                    <el-button class="add_btn" plain icon="el-icon-plus" @click="addUniversalField">
+                                        新增通用字段
+                                    </el-button>
                                 </el-form-item>
 
                                 <el-form-item>
                                     <el-button type="primary">一键生成</el-button>
                                     <el-button>保存表</el-button>
-                                    <el-button>重置</el-button>
+                                    <el-button @click="reset">重置</el-button>
                                 </el-form-item>
                             </el-form>
                         </div>
@@ -129,9 +197,7 @@
                     database: '',
                     table: '',
                     tableComment: '',
-                    dynamicItem: [
-                        {column_name: '',}
-                    ]
+                    dynamicItem: []
                 },
                 db_type_value: 1,
                 db_type_list: [
@@ -159,7 +225,99 @@
             handleFalse(e) {
                 // 阻止粘贴和剪切事件
                 e.preventDefault();
-            }
+            },
+            //添加字段
+            addField() {
+                this.form.dynamicItem.push({
+                    column_name: null,
+                    field_type: null,
+                    field_default: null,
+                    field_annotate: null,
+                    field_on_update: null,
+                    is_null: false,
+                    primary_key: false,
+                    increment: false,
+                })
+            },
+            //删除字段
+            delField(item) {
+                //表示先获取这个元素的下标，然后从这个下标开始计算，删除长度为1的元素
+                this.form.dynamicItem.splice(this.form.dynamicItem.indexOf(item), 1);
+            },
+            // 添加通用字段
+            addUniversalField() {
+                this.form.dynamicItem = [
+                    {
+                        column_name: 'id',
+                        field_type: 'varchar(30)',
+                        field_default: null,
+                        field_annotate: '主键',
+                        field_on_update: '',
+                        is_null: true,
+                        primary_key: true,
+                        increment: true,
+                    },
+                    {
+                        column_name: 'create_by',
+                        field_type: 'varchar(30)',
+                        field_default: null,
+                        field_annotate: '创建人',
+                        field_on_update: '',
+                        is_null: true,
+                        primary_key: false,
+                        increment: false,
+                    },
+                    {
+                        column_name: 'create_time',
+                        field_type: 'datetime',
+                        field_default: 'CURRENT_TIMESTAMP',
+                        field_annotate: '创建时间',
+                        field_on_update: '',
+                        is_null: true,
+                        primary_key: false,
+                        increment: false,
+                    },
+                    {
+                        column_name: 'update_by',
+                        field_type: 'varchar(30)',
+                        field_default: null,
+                        field_annotate: '更新人',
+                        field_on_update: '',
+                        is_null: true,
+                        primary_key: false,
+                        increment: false,
+                    },
+                    {
+                        column_name: 'update_time',
+                        field_type: 'datetime',
+                        field_default: 'CURRENT_TIMESTAMP',
+                        field_annotate: '更新时间',
+                        field_on_update: 'CURRENT_TIMESTAMP',
+                        is_null: true,
+                        primary_key: false,
+                        increment: false,
+                    },
+                    {
+                        column_name: 'is_deleted',
+                        field_type: 'int',
+                        field_default: 0,
+                        field_annotate: '是否删除：(0:未删 1：删除 )',
+                        field_on_update: null,
+                        is_null: true,
+                        primary_key: false,
+                        increment: false,
+                    }
+                ]
+            },
+            //重置
+            reset() {
+                this.form = {
+                    database: '',
+                    table: '',
+                    tableComment: '',
+                    dynamicItem: [           ]
+                }
+            },
         }
     });
 </script>
