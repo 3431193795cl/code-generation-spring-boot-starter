@@ -2,7 +2,7 @@ package org.jerry.code.service.impl;
 
 import org.jerry.code.config.CodeGenerationProperties;
 import org.jerry.code.config.TableEntityDTO;
-import org.jerry.code.service.IOperLogService;
+import org.jerry.code.service.ISaveTableService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class OperLogServiceImpl implements IOperLogService {
+public class SaveTableServiceImpl implements ISaveTableService {
 
     @Resource
     private JdbcTemplate jdbcTemplate;
@@ -24,28 +24,11 @@ public class OperLogServiceImpl implements IOperLogService {
     @Resource
     private CodeGenerationProperties conf;
 
-    @SuppressWarnings("all")
     @Override
-    public void split() {
-        /*try {
-            if (isTableExist(conf.getTableName())) {
-                log.info("日志表存在！");
-                String sql = generateSQL(conf.getTableName(), conf.getTypes());
-                log.info("新增语句：{}", sql);
-//                jdbcTemplate.update(sql);
-            } else {
-                log.info("日志表不存在存在！并开始创建！");
-                String ddl = generateDDL(conf.getTableName(), conf.getTypes());
-                log.info("日志表：{}", ddl);
-                jdbcTemplate.execute(ddl);
-                log.info("日志表创建成功！");
-                split();
-            }
-        } catch (Exception e) {
-            log.error("Error occurred while checking table existence", e);
-        }*/
+    public Boolean saveTable(String tableName) {
+        log.info(tableName);
+        return null;
     }
-
 
     /**
      * 根据给定的表名和列信息生成创建表的DDL语句

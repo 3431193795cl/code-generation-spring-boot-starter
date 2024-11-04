@@ -1,19 +1,22 @@
 package org.jerry.code.config;
 
-import org.jerry.code.service.IOperLogService;
-import org.jerry.code.service.impl.OperLogServiceImpl;
+import org.jerry.code.controller.SaveTableController;
+import org.jerry.code.service.ISaveTableService;
+import org.jerry.code.service.impl.SaveTableServiceImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
 
 @Configuration
-@ConditionalOnClass(value = {IOperLogService.class, OperLogServiceImpl.class})
+@ConditionalOnClass(SaveTableController.class)
 @EnableConfigurationProperties(CodeGenerationProperties.class)//ioc注入
 public class CodeGenerationAutoConfigure implements WebMvcConfigurer {
 
@@ -21,9 +24,18 @@ public class CodeGenerationAutoConfigure implements WebMvcConfigurer {
     private CodeGenerationProperties dbScanClass;
 
     @Bean
-    @ConditionalOnMissingBean
-    IOperLogService startService() {
-        return new OperLogServiceImpl();
+    public ISaveTableService tableService() {
+        return new SaveTableServiceImpl();
+    }
+
+    @Override
+    public void configureViewResolvers(ViewResolverRegistry registry) {
+        registry.jsp().prefix("/templates/").suffix(".html");
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
     }
 
     @Override
@@ -32,8 +44,9 @@ public class CodeGenerationAutoConfigure implements WebMvcConfigurer {
     }
 
     @Bean
-    public String customBean() {
-        return "This is a custom bean";
+    @ConditionalOnMissingBean
+    public SaveTableController saveTableController() {
+        return new SaveTableController(tableService());
     }
 
 }
