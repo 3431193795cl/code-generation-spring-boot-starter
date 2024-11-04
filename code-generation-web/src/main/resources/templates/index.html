@@ -139,7 +139,7 @@
                                 </el-form-item>
 
                                 <el-form-item>
-                                    <el-button type="primary">一键生成</el-button>
+                                    <el-button type="primary" @click="oneKeyGeneration">一键生成</el-button>
                                     <el-button>保存表</el-button>
                                     <el-button @click="reset">重置</el-button>
                                 </el-form-item>
@@ -187,6 +187,7 @@
 <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
 <!-- import JavaScript -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
 <script>
     new Vue({
         el: '#app',
@@ -246,68 +247,121 @@
             },
             // 添加通用字段
             addUniversalField() {
-                this.form.dynamicItem = [
-                    {
-                        column_name: 'id',
-                        field_type: 'varchar(30)',
-                        field_default: null,
-                        field_annotate: '主键',
-                        field_on_update: '',
-                        is_null: true,
-                        primary_key: true,
-                        increment: true,
-                    },
-                    {
-                        column_name: 'create_by',
-                        field_type: 'varchar(30)',
-                        field_default: null,
-                        field_annotate: '创建人',
-                        field_on_update: '',
-                        is_null: true,
-                        primary_key: false,
-                        increment: false,
-                    },
-                    {
-                        column_name: 'create_time',
-                        field_type: 'datetime',
-                        field_default: 'CURRENT_TIMESTAMP',
-                        field_annotate: '创建时间',
-                        field_on_update: '',
-                        is_null: true,
-                        primary_key: false,
-                        increment: false,
-                    },
-                    {
-                        column_name: 'update_by',
-                        field_type: 'varchar(30)',
-                        field_default: null,
-                        field_annotate: '更新人',
-                        field_on_update: '',
-                        is_null: true,
-                        primary_key: false,
-                        increment: false,
-                    },
-                    {
-                        column_name: 'update_time',
-                        field_type: 'datetime',
-                        field_default: 'CURRENT_TIMESTAMP',
-                        field_annotate: '更新时间',
-                        field_on_update: 'CURRENT_TIMESTAMP',
-                        is_null: true,
-                        primary_key: false,
-                        increment: false,
-                    },
-                    {
-                        column_name: 'is_deleted',
-                        field_type: 'int',
-                        field_default: 0,
-                        field_annotate: '是否删除：(0:未删 1：删除 )',
-                        field_on_update: null,
-                        is_null: true,
-                        primary_key: false,
-                        increment: false,
+                let universal_field =
+                    [
+                        {
+                            column_name: 'id',
+                            field_type: 'varchar(30)',
+                            field_default: null,
+                            field_annotate: '主键',
+                            field_on_update: '',
+                            is_null: true,
+                            primary_key: true,
+                            increment: true,
+                        },
+                        {
+                            column_name: 'create_by',
+                            field_type: 'varchar(30)',
+                            field_default: null,
+                            field_annotate: '创建人',
+                            field_on_update: '',
+                            is_null: false,
+                            primary_key: false,
+                            increment: false,
+                        },
+                        {
+                            column_name: 'create_time',
+                            field_type: 'datetime',
+                            field_default: 'CURRENT_TIMESTAMP',
+                            field_annotate: '创建时间',
+                            field_on_update: '',
+                            is_null: true,
+                            primary_key: false,
+                            increment: false,
+                        },
+                        {
+                            column_name: 'update_by',
+                            field_type: 'varchar(30)',
+                            field_default: null,
+                            field_annotate: '更新人',
+                            field_on_update: '',
+                            is_null: false,
+                            primary_key: false,
+                            increment: false,
+                        },
+                        {
+                            column_name: 'update_time',
+                            field_type: 'datetime',
+                            field_default: 'CURRENT_TIMESTAMP',
+                            field_annotate: '更新时间',
+                            field_on_update: 'CURRENT_TIMESTAMP',
+                            is_null: true,
+                            primary_key: false,
+                            increment: false,
+                        },
+                        {
+                            column_name: 'is_deleted',
+                            field_type: 'int',
+                            field_default: 0,
+                            field_annotate: '是否删除：(0:未删 1：删除 )',
+                            field_on_update: null,
+                            is_null: true,
+                            primary_key: false,
+                            increment: false,
+                        }
+                    ]
+                this.form.dynamicItem = universal_field
+            },
+            //一键生成
+            oneKeyGeneration() {
+                let ddl = "";
+                // 开始拼接创建表语句，包括表名
+                ddl = ddl.concat("CREATE TABLE IF NOT EXISTS ", this.form.table, " (\n");
+
+                // 遍历列信息，构建每个列的定义
+                for (let i = 0; i < this.form.dynamicItem.length; i++) {
+                    // 获取当前列信息
+                    let column = this.form.dynamicItem[i];
+                    // 拼接列名和列键
+                    ddl = ddl.concat("\t", column.column_name, " ", column.field_type);
+
+                    // 如果当前列有默认值，则添加DEFAULT约束
+                    if (column.field_default) {
+                        ddl = ddl.concat(" DEFAULT '", column.field_default, "'");
                     }
-                ]
+
+                    // 如果当前列不允许为空，则添加NOT NULL约束
+                    if (!column.is_null) {
+                        ddl = ddl.concat(" NOT NULL");
+                    } else {
+                        ddl = ddl.concat(" NULL");
+                    }
+
+                    // 如果当前列有更新时的行为，则添加ON UPDATE约束
+                    if (column.field_on_update) {
+                        ddl = ddl.concat(" ON UPDATE '", column.field_on_update, "'");
+                    }
+
+                    // 添加列的注释
+                    ddl = ddl.concat(" COMMENT '", column.field_annotate, "'");
+
+                    // 如果当前列是主键，则添加PRIMARY KEY约束
+                    if (column.primary_key) {
+                        ddl = ddl.concat(" PRIMARY KEY");
+                    }
+
+                    // 如果不是最后一个列，则添加逗号分隔
+                    if (i < this.form.dynamicItem.length - 1) {
+                        ddl = ddl.concat(",");
+                    }
+
+                    // 每个列定义后换行
+                    ddl = ddl.concat("\n");
+                }
+                ddl =   ddl.concat(") COMMENT '" , this.form.tableComment , "' charset = utf8;");
+                // 完成表定义，添加字
+                console.log(ddl)
+                this.return_results = ddl.toString();
             },
             //重置
             reset() {
@@ -315,7 +369,7 @@
                     database: '',
                     table: '',
                     tableComment: '',
-                    dynamicItem: [           ]
+                    dynamicItem: []
                 }
             },
         }
