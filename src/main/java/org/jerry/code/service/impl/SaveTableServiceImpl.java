@@ -1,17 +1,21 @@
 package org.jerry.code.service.impl;
 
 import org.jerry.code.config.CodeGenerationProperties;
-import org.jerry.code.config.TableEntityDTO;
+import org.jerry.code.dto.DynamicItemDTO;
+import org.jerry.code.dto.GenerateDTO;
 import org.jerry.code.service.ISaveTableService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -30,45 +34,52 @@ public class SaveTableServiceImpl implements ISaveTableService {
         return null;
     }
 
-    /**
-     * 根据给定的表名和列信息生成创建表的DDL语句
-     *
-     * @param tableName 表名
-     * @param columns   表的列信息，每个列包含列名、列键、是否为主键和列注释等信息
-     * @return 创建表的DDL语句
-     */
-    private String generateDDL(String tableName, List<TableEntityDTO> columns) {
-        // 初始化DDL语句构建器
-        StringBuilder ddl = new StringBuilder();
-        // 开始拼接创建表语句，包括表名
-        ddl.append("CREATE TABLE ").append(tableName).append(" (\n");
+    @Override
+    public List<String> generateDML(GenerateDTO generateDTO) {
+        return Collections.EMPTY_LIST;
+    }
 
+    @Override
+    public String generateDDL(GenerateDTO generateDTO) {
+        StringBuffer ddl = new StringBuffer("```sql\n");
+        ddl.append("--" + generateDTO.getTableComment() + "\n");
+        // 开始拼接创建表语句，包括表名
+        ddl.append("CREATE TABLE IF NOT EXISTS " + generateDTO.getTableName() + " (\n");
         // 遍历列信息，构建每个列的定义
-        for (int i = 0; i < columns.size(); i++) {
+        for (int i = 0; i < generateDTO.getDynamicItem().size(); i++) {
             // 获取当前列信息
-            TableEntityDTO column = columns.get(i);
+            DynamicItemDTO column = generateDTO.getDynamicItem().get(i);
             // 拼接列名和列键
-            ddl.append("\t").append(column.getColumnName()).append(" ");
-            // 如果当前列是主键，则添加PRIMARY KEY和NOT NULL约束
-            if (column.getIsPk()) {
-                ddl.append(" PRIMARY KEY");
+            ddl.append("\t" + column.getColumnName() + " " + column.getFieldType());
+            // 如果当前列有默认值，则添加DEFAULT约束
+            if (!StringUtils.isEmpty(column.getFieldDefault())) {
+                ddl.append(" DEFAULT '" + column.getFieldDefault() + "'");
+            }
+            // 如果当前列不允许为空，则添加NOT NULL约束
+            if (column.getIsNull()) {
                 ddl.append(" NOT NULL");
             } else {
-                // 如果不是主键，则允许为空
                 ddl.append(" NULL");
             }
+            // 如果当前列有更新时的行为，则添加ON UPDATE约束
+            if (!StringUtils.isEmpty(column.getFieldOnUpdate())) {
+                ddl.append(" ON UPDATE '" + column.getFieldOnUpdate() + "'");
+            }
             // 添加列的注释
-            ddl.append(" COMMENT '").append(column.getColumnComment()).append("'");
+            ddl.append(" COMMENT '" + column.getFieldAnnotate() + "'");
+            // 如果当前列是主键，则添加PRIMARY KEY约束
+            if (column.getPrimaryKey()) {
+                ddl.append(" PRIMARY KEY");
+            }
             // 如果不是最后一个列，则添加逗号分隔
-            if (i < columns.size() - 1) {
+            if (i < generateDTO.getDynamicItem().size() - 1) {
                 ddl.append(",");
             }
             // 每个列定义后换行
             ddl.append("\n");
         }
-        // 完成表定义，添加字符集信息
-        ddl.append(") charset = utf8;");
-        // 返回生成的DDL语句
+        ddl.append(") COMMENT '" + generateDTO.getTableComment() + "' charset = utf8;\n```");
+        // 完成表定义，添加字
         return ddl.toString();
     }
 
@@ -80,7 +91,7 @@ public class SaveTableServiceImpl implements ISaveTableService {
      * @param columns   表列信息的列表
      * @return 生成的INSERT INTO SQL语句
      */
-    private String generateSQL(String tableName, List<TableEntityDTO> columns) {
+    private String generateSQL(String tableName, List<DynamicItemDTO> columns) {
         // 使用StringBuilder来拼接SQL语句，提高效率
         StringBuilder sql = new StringBuilder();
         // 开始拼接SQL语句，首先添加INSERT INTO关键字和表名
@@ -88,7 +99,7 @@ public class SaveTableServiceImpl implements ISaveTableService {
         // 遍历列信息列表，拼接列名
         for (int i = 0; i < columns.size(); i++) {
             // 获取当前列信息
-            TableEntityDTO column = columns.get(i);
+            DynamicItemDTO column = columns.get(i);
             // 拼接列名和列键
             sql.append(" ").append(column.getColumnName());
             // 如果不是最后一个列，添加逗号分隔
@@ -99,7 +110,7 @@ public class SaveTableServiceImpl implements ISaveTableService {
         sql.append(") VALUES (");
         for (int i = 0; i < columns.size(); i++) {
             // 获取当前列信息
-            TableEntityDTO column = columns.get(i);
+            DynamicItemDTO column = columns.get(i);
             // 拼接列值
             sql.append(" ").append("?");
             // 如果不是最后一个列，添加逗号分隔

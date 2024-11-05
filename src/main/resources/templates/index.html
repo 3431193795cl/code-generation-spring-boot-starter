@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <!-- import CSS -->
@@ -52,14 +52,18 @@
                         <div>
                             <el-form ref="form" :model="form">
                                 <el-form-item label="库名">
-                                    <el-input v-model="form.database"
+                                    <el-input v-model="form.dataBase"
                                               placeholder="库名：多个单词词建议用下划线分隔"></el-input>
                                 </el-form-item>
                                 <el-form-item label="表名" required>
-                                    <el-input v-model="form.table" placeholder="test_table"></el-input>
+                                    <el-input v-model="form.tableName" placeholder="test_table"></el-input>
                                 </el-form-item>
                                 <el-form-item label="表注释">
                                     <el-input v-model="form.tableComment"
+                                              placeholder="描述表的中文名称、作用等"></el-input>
+                                </el-form-item>
+                                <el-form-item label="生成条数">
+                                    <el-input type="number" v-model="form.tableComment"
                                               placeholder="描述表的中文名称、作用等"></el-input>
                                 </el-form-item>
                                 <div v-for="(item, index) in form.dynamicItem" :key="index">
@@ -67,11 +71,11 @@
                                         <el-collapse-item :name="index">
                                             <!--title 信息-->
                                             <template slot="title">
-                                                <el-col :span="6">
-                                                    <el-input v-model="item.column_name"
-                                                              placeholder="列名"></el-input>
+                                                <el-col :span="14">
+                                                    <el-input v-model="item.columnName"
+                                                              placeholder="字段名"></el-input>
                                                 </el-col>
-                                                <el-col :span="4" :offset="14">
+                                                <el-col :span="6" :offset="8">
                                                     <el-button type="text">保存</el-button>
                                                     <el-button type="text" style="color: #ff0000"
                                                                @click="delField(item)">删除
@@ -79,51 +83,107 @@
                                                 </el-col>
                                             </template>
                                             <!--主要信息-->
-                                            <div style="background-color: #e4e4e4">
-                                                <el-col :span="8">
-                                                    <el-form-item label="字段类型">
-                                                        <el-input v-model="item.field_type"
-                                                                  placeholder="如：varchar(225)"></el-input>
-                                                    </el-form-item>
-                                                </el-col>
-                                                <el-col :span="8">
-                                                    <el-form-item label="默认值">
-                                                        <el-input v-model="item.field_default"
-                                                                  placeholder="如：varchar(225)"></el-input>
-                                                    </el-form-item>
-                                                </el-col>
-                                                <el-col :span="8">
-                                                    <el-form-item label="注释">
-                                                        <el-input v-model="item.field_annotate"
-                                                                  placeholder="如：varchar(225)"></el-input>
-                                                    </el-form-item>
-                                                </el-col>
-                                                <el-col :span="8">
-                                                    <el-form-item label="onUpdate">
-                                                        <el-input v-model="item.field_on_update"
-                                                                  placeholder="如：varchar(225)"></el-input>
-                                                    </el-form-item>
-                                                </el-col>
-                                                <el-col :span="8" style="margin-top: 38px">
+                                            <div>
+                                                <el-row :gutter="24">
                                                     <el-col :span="8">
-                                                        <el-form-item label="非空">
-                                                            <el-checkbox v-model="item.is_null">
-                                                            </el-checkbox>
+                                                        <el-form-item label="字段类型">
+                                                            <el-input v-model="item.fieldType"
+                                                                      placeholder="如：varchar(225)"></el-input>
                                                         </el-form-item>
                                                     </el-col>
                                                     <el-col :span="8">
-                                                        <el-form-item label="主键">
-                                                            <el-checkbox v-model="item.primary_key">
-                                                            </el-checkbox>
+                                                        <el-form-item label="默认值">
+                                                            <el-input v-model="item.fieldDefault"
+                                                                      placeholder="如：varchar(225)"></el-input>
                                                         </el-form-item>
                                                     </el-col>
                                                     <el-col :span="8">
-                                                        <el-form-item label="自增">
-                                                            <el-checkbox v-model="item.increment">
-                                                            </el-checkbox>
+                                                        <el-form-item label="注释">
+                                                            <el-input v-model="item.fieldAnnotate"
+                                                                      placeholder="如：varchar(225)"></el-input>
                                                         </el-form-item>
                                                     </el-col>
-                                                </el-col>
+                                                </el-row>
+                                                <el-row :gutter="20">
+                                                    <el-col :span="8">
+                                                        <el-form-item label="onUpdate">
+                                                            <el-input v-model="item.fieldOnUpdate"
+                                                                      placeholder="如：varchar(225)"></el-input>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                    <el-col :span="16" style="margin-top: 38px">
+                                                        <el-col :span="6">
+                                                            <el-form-item label="非空">
+                                                                <el-checkbox v-model="item.isNull">
+                                                                </el-checkbox>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="6">
+                                                            <el-form-item label="主键">
+                                                                <el-checkbox v-model="item.primaryKey">
+                                                                </el-checkbox>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="6">
+                                                            <el-form-item label="自增">
+                                                                <el-checkbox v-model="item.increment">
+                                                                </el-checkbox>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                    </el-col>
+                                                </el-row>
+                                                <el-row :gutter="24">
+                                                    <el-col :span="12">
+                                                        <el-form-item label="模拟类型">
+                                                            <el-select v-model="item.simulationType"
+                                                                       placeholder="请选择">
+                                                                <el-option
+                                                                        v-for="item in simulationType_list"
+                                                                        :key="item.value"
+                                                                        :label="item.label"
+                                                                        :value="item.value">
+                                                                </el-option>
+                                                            </el-select>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                    <el-col :span="12" v-if="item.simulationType != 10006">
+                                                        <el-form-item label="随机规则">
+                                                            <!--                                                            {-->
+                                                            <!--                                                            value: 1,-->
+                                                            <!--                                                            label: '固定'-->
+                                                            <!--                                                            },-->
+                                                            <!--                                                            {-->
+                                                            <!--                                                            value: 2,-->
+                                                            <!--                                                            label: '递增'-->
+                                                            <!--                                                            },-->
+                                                            <!--                                                            {-->
+                                                            <!--                                                            value: 3,-->
+                                                            <!--                                                            label: '规则'-->
+                                                            <!--                                                            },-->
+                                                            <!--                                                            {-->
+                                                            <!--                                                            value: 4,-->
+                                                            <!--                                                            label: '不模拟'-->
+                                                            <!--                                                            },-->
+                                                            <el-input v-if="item.simulationType == 10001"
+                                                                      v-model="item.simulationValue"
+                                                                      placeholder="如：1，2，3，4"></el-input>
+                                                            <el-select v-if="item.simulationType == 10002"
+                                                                       v-model="item.simulationValue"
+                                                                       placeholder="请选择">
+                                                                <el-option
+                                                                        v-for="item in random_list"
+                                                                        :key="item.value"
+                                                                        :label="item.label"
+                                                                        :value="item.value">
+                                                                </el-option>
+                                                            </el-select>
+                                                            <el-input-number v-if="item.simulationType == 2"
+                                                                             v-model="item.simulationValue"
+                                                                             controls-position="right" step="1" :min="1"
+                                                                             :max="10"></el-input-number>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                </el-row>
                                             </div>
                                         </el-collapse-item>
                                     </el-collapse>
@@ -152,49 +212,64 @@
                 </el-col>
                 <el-col :span="12">
                     <el-tabs type="border-card">
-                        <el-tab-pane label="建表语句（ddl）">
+                        <el-tab-pane label="SQL代码">
+                            <el-card>
+                                <el-empty v-if="!result_ddl" description="结果为空"></el-empty>
+                                <div v-else>
+                                    <el-collapse border-radius="0px">
+                                        <el-collapse-item name="1">
+                                            <template slot="title">
+                                                <el-col :span="14">
+                                                    建表语句
+                                                </el-col>
+                                                <el-col :span="6" :offset="16">
+                                                    <el-button size="mini">复制</el-button>
+                                                </el-col>
+                                            </template>
+                                            <div v-html="result_ddl"></div>
+                                        </el-collapse-item>
+                                        <el-collapse-item name="2">
+                                            <template slot="title">
+                                                <el-col :span="14">
+                                                    插入语句
+                                                </el-col>
+                                                <el-col :span="6" :offset="16">
+                                                    <el-button size="mini">复制</el-button>
+                                                </el-col>
+                                            </template>
+                                            <div v-html="result_dml"></div>
+                                        </el-collapse-item>
+                                    </el-collapse>
+                                </div>
+                            </el-card>
+                        </el-tab-pane>
+                        <el-tab-pane label="模拟数据">
                             <el-card class="box-card">
                                 <div>
-                                    <el-empty v-if="!return_results" description="结果为空"></el-empty>
-                                    <div v-else>
-                                        <el-input
-                                                v-model="return_results"
-                                                type="textarea"
-                                                rows="26"
-                                                resize="none"
-                                                placeholder="请输入内容"
-                                                maxlength="3000"
-                                                readonly
-                                                @paste.native.capture.prevent="handleFalse"
-                                                @cut.native.capture.prevent="handleFalse"
-                                                :class="return_results ? 'return_results' : ''"
-                                        ></el-input>
+                                    <el-empty v-if="!result_dml" description="结果为空"></el-empty>
+                                    <div v-else v-html="result_dml">
                                     </div>
                                 </div>
                             </el-card>
                         </el-tab-pane>
-                        <el-tab-pane label="配置管理">
+                        <el-tab-pane label="JSON数据">
                             <el-card class="box-card">
                                 <div>
-                                    <el-empty v-if="!return_results" description="结果为空"></el-empty>
-                                    <div v-else>
-                                        <pre data-index="0" class="set-code-show prettyprint"><code
-                                                class="has-numbering" onclick="mdcp.copyCode(event)"
-                                                style="position: unset;">   &lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
-   &lt;/dependency&gt;
-<div class="hljs-button {2}" data-title="复制"></div></code><ul class="pre-numbering" style=""><li
-                                                style="color: rgb(153, 153, 153);">1</li><li
-                                                style="color: rgb(153, 153, 153);">2</li><li
-                                                style="color: rgb(153, 153, 153);">3</li><li
-                                                style="color: rgb(153, 153, 153);">4</li></ul></pre>
+                                    <el-empty v-if="!result_json" description="结果为空"></el-empty>
+                                    <div v-else v-html="result_json">
                                     </div>
                                 </div>
                             </el-card>
                         </el-tab-pane>
-                        <el-tab-pane label="角色管理">角色管理</el-tab-pane>
-                        <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
+                        <el-tab-pane label="Java代码">
+                            <el-card class="box-card">
+                                <div>
+                                    <el-empty v-if="!result_java" description="结果为空"></el-empty>
+                                    <div v-else v-html="result_java">
+                                    </div>
+                                </div>
+                            </el-card>
+                        </el-tab-pane>
                     </el-tabs>
                 </el-col>
             </el-row>
@@ -211,7 +286,6 @@
 <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
 <!-- import JavaScript -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
     new Vue({
@@ -220,9 +294,10 @@
             return {
                 activeIndex: '1',
                 form: {
-                    database: '',
-                    table: '',
+                    dataBase: '',
+                    tableName: '',
                     tableComment: '',
+                    analogNumber: 0,
                     dynamicItem: []
                 },
                 db_type_value: 1,
@@ -244,7 +319,64 @@
                         label: 'PostgreSQL'
                     }
                 ],
-                return_results: null
+                simulationType_list: [
+                    {
+                        value: 10001,
+                        label: '固定'
+                    },
+                    {
+                        value: 10002,
+                        label: '随机'
+                    },
+                    {
+                        value: 10003,
+                        label: '递增'
+                    },
+                    {
+                        value: 10004,
+                        label: '规则'
+                    },
+                    {
+                        value: 10005,
+                        label: '词库'
+                    },
+                    {
+                        value: 10006,
+                        label: '不模拟'
+                    },
+                ],
+                random_list: [
+                    {
+                        value: 1000201,
+                        label: '人名'
+                    },
+                    {
+                        value: 1000202,
+                        label: '地址'
+                    },
+                    {
+                        value: 1000203,
+                        label: '身份证号码'
+                    },
+                    {
+                        value: 1000204,
+                        label: '邮箱地址'
+                    },
+                    {
+                        value: 1000205,
+                        label: '手机号码'
+                    },
+                    {
+                        value: 1000206,
+                        label: '废话'
+                    },
+
+                ],
+                result_ddl: null,
+                result_dml: null,
+                result: [],
+                result_json: null,
+                result_java: null,
             };
         },
         methods: {
@@ -255,14 +387,16 @@
             //添加字段
             addField() {
                 this.form.dynamicItem.push({
-                    column_name: null,
-                    field_type: null,
-                    field_default: null,
-                    field_annotate: null,
-                    field_on_update: null,
-                    is_null: false,
-                    primary_key: false,
+                    columnName: null,
+                    fieldType: null,
+                    fieldDefault: null,
+                    fieldAnnotate: null,
+                    fieldOnUpdate: null,
+                    isNull: false,
+                    primaryKey: false,
                     increment: false,
+                    simulationType: 10006,
+                    simulationValue: null,
                 })
             },
             //删除字段
@@ -272,112 +406,104 @@
             },
             // 添加通用字段
             addUniversalField() {
-                let universal_field =
-                    [
-                        {
-                            column_name: 'id',
-                            field_type: 'varchar(30)',
-                            field_default: null,
-                            field_annotate: '主键',
-                            field_on_update: '',
-                            is_null: true,
-                            primary_key: true,
-                            increment: true,
-                        },
-                        {
-                            column_name: 'create_by',
-                            field_type: 'varchar(30)',
-                            field_default: null,
-                            field_annotate: '创建人',
-                            field_on_update: '',
-                            is_null: false,
-                            primary_key: false,
-                            increment: false,
-                        },
-                        {
-                            column_name: 'create_time',
-                            field_type: 'datetime',
-                            field_default: 'CURRENT_TIMESTAMP',
-                            field_annotate: '创建时间',
-                            field_on_update: '',
-                            is_null: true,
-                            primary_key: false,
-                            increment: false,
-                        },
-                        {
-                            column_name: 'update_by',
-                            field_type: 'varchar(30)',
-                            field_default: null,
-                            field_annotate: '更新人',
-                            field_on_update: '',
-                            is_null: false,
-                            primary_key: false,
-                            increment: false,
-                        },
-                        {
-                            column_name: 'update_time',
-                            field_type: 'datetime',
-                            field_default: 'CURRENT_TIMESTAMP',
-                            field_annotate: '更新时间',
-                            field_on_update: 'CURRENT_TIMESTAMP',
-                            is_null: true,
-                            primary_key: false,
-                            increment: false,
-                        },
-                        {
-                            column_name: 'is_deleted',
-                            field_type: 'int',
-                            field_default: 0,
-                            field_annotate: '是否删除：(0:未删 1：删除 )',
-                            field_on_update: null,
-                            is_null: true,
-                            primary_key: false,
-                            increment: false,
-                        }
-                    ]
-                this.form.dynamicItem = universal_field
+                this.form.dynamicItem = [
+                    {
+                        columnName: 'id',
+                        fieldType: 'varchar(30)',
+                        fieldDefault: null,
+                        fieldAnnotate: '主键',
+                        fieldOnUpdate: '',
+                        isNull: true,
+                        primaryKey: true,
+                        increment: true,
+                        simulationType: 10006,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'create_by',
+                        fieldType: 'varchar(30)',
+                        fieldDefault: null,
+                        fieldAnnotate: '创建人',
+                        fieldOnUpdate: '',
+                        isNull: false,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10006,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'create_time',
+                        fieldType: 'datetime',
+                        fieldDefault: 'CURRENT_TIMESTAMP',
+                        fieldAnnotate: '创建时间',
+                        fieldOnUpdate: '',
+                        isNull: true,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10006,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'update_by',
+                        fieldType: 'varchar(30)',
+                        fieldDefault: null,
+                        fieldAnnotate: '更新人',
+                        fieldOnUpdate: '',
+                        isNull: false,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10006,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'update_time',
+                        fieldType: 'datetime',
+                        fieldDefault: 'CURRENT_TIMESTAMP',
+                        fieldAnnotate: '更新时间',
+                        fieldOnUpdate: 'CURRENT_TIMESTAMP',
+                        isNull: true,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10006,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'is_deleted',
+                        fieldType: 'int',
+                        fieldDefault: 0,
+                        fieldAnnotate: '是否删除：(0:未删 1：删除 )',
+                        fieldOnUpdate: null,
+                        isNull: true,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10006,
+                        simulationValue: null,
+                    }
+                ]
             },
             //一键生成
             oneKeyGeneration() {
-                let ddl = "";
-                // 开始拼接创建表语句，包括表名
-                ddl = ddl.concat("CREATE TABLE IF NOT EXISTS ", this.form.table, " (\n");
-                // 遍历列信息，构建每个列的定义
-                for (let i = 0; i < this.form.dynamicItem.length; i++) {
-                    // 获取当前列信息
-                    let column = this.form.dynamicItem[i];
-                    // 拼接列名和列键
-                    ddl = ddl.concat("\t", column.column_name, " ", column.field_type);
-                    // 如果当前列有默认值，则添加DEFAULT约束
-                    if (column.field_default) {
-                        ddl = ddl.concat(" DEFAULT '", column.field_default, "'");
-                    }
-                    // 如果当前列不允许为空，则添加NOT NULL约束
-                    if (!column.is_null) {
-                        ddl = ddl.concat(" NOT NULL");
-                    } else {
-                        ddl = ddl.concat(" NULL");
-                    }
-                    // 如果当前列有更新时的行为，则添加ON UPDATE约束
-                    if (column.field_on_update) {
-                        ddl = ddl.concat(" ON UPDATE '", column.field_on_update, "'");
-                    }
-                    // 添加列的注释
-                    ddl = ddl.concat(" COMMENT '", column.field_annotate, "'");
-                    // 如果当前列是主键，则添加PRIMARY KEY约束
-                    if (column.primary_key) {
-                        ddl = ddl.concat(" PRIMARY KEY");
-                    }
-                    // 如果不是最后一个列，则添加逗号分隔
-                    if (i < this.form.dynamicItem.length - 1) {
-                        ddl = ddl.concat(",");
-                    }
-                    // 每个列定义后换行
-                    ddl = ddl.concat("\n");
-                }
-                ddl = ddl.concat(") COMMENT '", this.form.tableComment, "' charset = utf8;");
-                // 完成表定义，添加字
-                this.return_results = ddl.toString();
+                this.generateDDL()
+                this.generateDML()
+            },
+            generateDDL() {
+                fetch("/table/generateDDL", {
+                    method: 'POST', // 或者 'PUT'，取决于你的 API 要求
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(this.form)
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        this.result_ddl = marked.parse(data.data.ddl)
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    })
+            },
+            generateDML() {
+
             },
             saveTable() {
                 fetch("/table/save", {
@@ -396,11 +522,14 @@
             //重置
             reset() {
                 this.form = {
-                    database: '',
-                    table: '',
+                    dataBase: '',
+                    tableName: '',
                     tableComment: '',
+                    analogNumber: 0,
                     dynamicItem: []
                 }
+                this.result_dml = ''
+                this.result_ddl = ''
             },
         }
     });
