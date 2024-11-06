@@ -36,6 +36,19 @@ public class SaveTableServiceImpl implements ISaveTableService {
 
     @Override
     public List<String> generateDML(GenerateDTO generateDTO) {
+        StringBuffer dml = new StringBuffer("```sql\n");
+        for (int i = 0; i < generateDTO.getAnalogNumber(); i++) {
+            dml.append("INSERT INTO ").append(generateDTO.getTableName()).append(" (");
+            for (int j = 0; j < generateDTO.getDynamicItem().size(); j++) {
+                dml.append(generateDTO.getDynamicItem().get(j).getColumnName());
+                // 如果不是最后一个列，则添加逗号分隔
+                if (i < generateDTO.getDynamicItem().size() - 1) {
+                    dml.append(",");
+                }
+            }
+            dml.append(") VALUE (");
+
+        }
         return Collections.EMPTY_LIST;
     }
 

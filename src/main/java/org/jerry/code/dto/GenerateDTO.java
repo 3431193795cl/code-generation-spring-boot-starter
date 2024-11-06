@@ -23,7 +23,7 @@ public class GenerateDTO implements Serializable {
     /**
      * 生成数量
      */
-    private String analogNumber;
+    private Integer analogNumber;
 
     /**
      * 表注释

@@ -146,30 +146,18 @@
                                                             </el-select>
                                                         </el-form-item>
                                                     </el-col>
-                                                    <el-col :span="12" v-if="item.simulationType != 10006">
-                                                        <el-form-item label="随机规则">
-                                                            <!--                                                            {-->
-                                                            <!--                                                            value: 1,-->
-                                                            <!--                                                            label: '固定'-->
-                                                            <!--                                                            },-->
-                                                            <!--                                                            {-->
-                                                            <!--                                                            value: 2,-->
-                                                            <!--                                                            label: '递增'-->
-                                                            <!--                                                            },-->
-                                                            <!--                                                            {-->
-                                                            <!--                                                            value: 3,-->
-                                                            <!--                                                            label: '规则'-->
-                                                            <!--                                                            },-->
-                                                            <!--                                                            {-->
-                                                            <!--                                                            value: 4,-->
-                                                            <!--                                                            label: '不模拟'-->
-                                                            <!--                                                            },-->
-                                                            <el-input v-if="item.simulationType == 10001"
-                                                                      v-model="item.simulationValue"
-                                                                      placeholder="如：1，2，3，4"></el-input>
-                                                            <el-select v-if="item.simulationType == 10002"
-                                                                       v-model="item.simulationValue"
-                                                                       placeholder="请选择">
+                                                    <el-col :span="12" v-if="item.simulationType != 10005">
+                                                        <el-form-item label="固定值"
+                                                                      v-if="item.simulationType == 10001">
+                                                            <el-input
+                                                                    v-model="item.simulationValue"
+                                                                    placeholder="如：1，2，3，4"></el-input>
+                                                        </el-form-item>
+                                                        <el-form-item label="随机值"
+                                                                      v-if="item.simulationType == 10002">
+                                                            <el-select
+                                                                    v-model="item.simulationValue"
+                                                                    placeholder="请选择">
                                                                 <el-option
                                                                         v-for="item in random_list"
                                                                         :key="item.value"
@@ -177,10 +165,19 @@
                                                                         :value="item.value">
                                                                 </el-option>
                                                             </el-select>
-                                                            <el-input-number v-if="item.simulationType == 2"
-                                                                             v-model="item.simulationValue"
-                                                                             controls-position="right" step="1" :min="1"
-                                                                             :max="10"></el-input-number>
+                                                        </el-form-item>
+                                                        <el-form-item label="递增值"
+                                                                      v-if="item.simulationType == 10003">
+                                                            <el-input-number
+                                                                    v-model="item.simulationValue"
+                                                                    controls-position="right" step="1" :min="1"
+                                                                    :max="10"></el-input-number>
+                                                        </el-form-item>
+                                                        <el-form-item label="规则"
+                                                                      v-if="item.simulationType == 10004">
+                                                            <el-input
+                                                                    v-model="item.simulationValue"
+                                                                    placeholder="如：正则表达式"></el-input>
                                                         </el-form-item>
                                                     </el-col>
                                                 </el-row>
@@ -338,10 +335,6 @@
                     },
                     {
                         value: 10005,
-                        label: '词库'
-                    },
-                    {
-                        value: 10006,
                         label: '不模拟'
                     },
                 ],
@@ -372,6 +365,80 @@
                     },
 
                 ],
+                universalize_list: [
+                    {
+                        columnName: 'id',
+                        fieldType: 'varchar(30)',
+                        fieldDefault: null,
+                        fieldAnnotate: '主键',
+                        fieldOnUpdate: '',
+                        isNull: true,
+                        primaryKey: true,
+                        increment: true,
+                        simulationType: 10005,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'create_by',
+                        fieldType: 'varchar(30)',
+                        fieldDefault: null,
+                        fieldAnnotate: '创建人',
+                        fieldOnUpdate: '',
+                        isNull: false,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10005,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'create_time',
+                        fieldType: 'datetime',
+                        fieldDefault: 'CURRENT_TIMESTAMP',
+                        fieldAnnotate: '创建时间',
+                        fieldOnUpdate: '',
+                        isNull: true,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10005,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'update_by',
+                        fieldType: 'varchar(30)',
+                        fieldDefault: null,
+                        fieldAnnotate: '更新人',
+                        fieldOnUpdate: '',
+                        isNull: false,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10005,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'update_time',
+                        fieldType: 'datetime',
+                        fieldDefault: 'CURRENT_TIMESTAMP',
+                        fieldAnnotate: '更新时间',
+                        fieldOnUpdate: 'CURRENT_TIMESTAMP',
+                        isNull: true,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10005,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'is_deleted',
+                        fieldType: 'int',
+                        fieldDefault: 0,
+                        fieldAnnotate: '是否删除：(0:未删 1：删除 )',
+                        fieldOnUpdate: null,
+                        isNull: true,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10005,
+                        simulationValue: null,
+                    }
+                ],
                 result_ddl: null,
                 result_dml: null,
                 result: [],
@@ -395,7 +462,7 @@
                     isNull: false,
                     primaryKey: false,
                     increment: false,
-                    simulationType: 10006,
+                    simulationType: 10005,
                     simulationValue: null,
                 })
             },
@@ -406,84 +473,12 @@
             },
             // 添加通用字段
             addUniversalField() {
-                this.form.dynamicItem = [
-                    {
-                        columnName: 'id',
-                        fieldType: 'varchar(30)',
-                        fieldDefault: null,
-                        fieldAnnotate: '主键',
-                        fieldOnUpdate: '',
-                        isNull: true,
-                        primaryKey: true,
-                        increment: true,
-                        simulationType: 10006,
-                        simulationValue: null,
-                    },
-                    {
-                        columnName: 'create_by',
-                        fieldType: 'varchar(30)',
-                        fieldDefault: null,
-                        fieldAnnotate: '创建人',
-                        fieldOnUpdate: '',
-                        isNull: false,
-                        primaryKey: false,
-                        increment: false,
-                        simulationType: 10006,
-                        simulationValue: null,
-                    },
-                    {
-                        columnName: 'create_time',
-                        fieldType: 'datetime',
-                        fieldDefault: 'CURRENT_TIMESTAMP',
-                        fieldAnnotate: '创建时间',
-                        fieldOnUpdate: '',
-                        isNull: true,
-                        primaryKey: false,
-                        increment: false,
-                        simulationType: 10006,
-                        simulationValue: null,
-                    },
-                    {
-                        columnName: 'update_by',
-                        fieldType: 'varchar(30)',
-                        fieldDefault: null,
-                        fieldAnnotate: '更新人',
-                        fieldOnUpdate: '',
-                        isNull: false,
-                        primaryKey: false,
-                        increment: false,
-                        simulationType: 10006,
-                        simulationValue: null,
-                    },
-                    {
-                        columnName: 'update_time',
-                        fieldType: 'datetime',
-                        fieldDefault: 'CURRENT_TIMESTAMP',
-                        fieldAnnotate: '更新时间',
-                        fieldOnUpdate: 'CURRENT_TIMESTAMP',
-                        isNull: true,
-                        primaryKey: false,
-                        increment: false,
-                        simulationType: 10006,
-                        simulationValue: null,
-                    },
-                    {
-                        columnName: 'is_deleted',
-                        fieldType: 'int',
-                        fieldDefault: 0,
-                        fieldAnnotate: '是否删除：(0:未删 1：删除 )',
-                        fieldOnUpdate: null,
-                        isNull: true,
-                        primaryKey: false,
-                        increment: false,
-                        simulationType: 10006,
-                        simulationValue: null,
-                    }
-                ]
+                this.form.dynamicItem = this.form.dynamicItem.concat(this.universalize_list)
+                this.form.dynamicItem = this.form.dynamicItem.filter((item, index) => this.form.dynamicItem.indexOf(item) === index);
             },
             //一键生成
             oneKeyGeneration() {
-                this.generateDDL()
+                // this.generateDDL()
                 this.generateDML()
             },
             generateDDL() {
@@ -503,7 +498,57 @@
                     })
             },
             generateDML() {
+                const form = JSON.parse(JSON.stringify(this.form));
+                if (this.haveCommonObject(form.dynamicItem, this.universalize_list)) {
+                    const array = form.dynamicItem.concat(this.universalize_list)
+                    form.dynamicItem = this.removeList(array)
+                }
+                fetch("/table/generateDML", {
+                    method: 'POST', // 或者 'PUT'，取决于你的 API 要求
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(form)
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        this.result_dml = marked.parse(data.data)
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    })
+            },
+            haveCommonObject(arr1, arr2) {
+                return arr1.some(obj1 => arr2.some(obj2 => JSON.stringify(obj1) === JSON.stringify(obj2)));
+            },
+            removeList(data){
+                // 创建一个字典来记录每个 columnName 的出现次数和索引位置
+                let countDict = {};
+                data.forEach((item, index) => {
+                    if (!countDict[item.columnName]) {
+                        countDict[item.columnName] = [];
+                    }
+                    countDict[item.columnName].push(index);
+                });
 
+                // 找出那些出现一次的 columnName 对应的索引位置
+                let indicesToRemove = new Set();
+                for (let key in countDict) {
+                    if (countDict[key].length === 1) {
+                        countDict[key].forEach(index => indicesToRemove.add(index));
+                    } else {
+                        countDict[key].forEach(index => indicesToRemove.add(index)); // 添加所有索引位置，因为需要删除两次出现的项
+                    }
+                }
+
+// 从后往前删除元素，避免索引变化问题
+                let sortedIndices = Array.from(indicesToRemove).sort((a, b) => b - a);
+                sortedIndices.forEach(index => {
+                    data.splice(index, 1);
+                });
+
+                console.log(data);
+                return data;
             },
             saveTable() {
                 fetch("/table/save", {
