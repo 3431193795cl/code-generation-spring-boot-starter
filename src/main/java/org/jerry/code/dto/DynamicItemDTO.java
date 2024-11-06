@@ -52,7 +52,7 @@ public class DynamicItemDTO implements Serializable {
     /**
      * 模拟数据类型
      */
-    private String simulationType;
+    private Integer simulationType;
 
     /**
      * 模拟数据值

@@ -1,10 +1,19 @@
 package org.jerry.code.service.impl;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
+import com.mifmif.common.regex.Generex;
 import org.jerry.code.config.CodeGenerationProperties;
+import org.jerry.code.constant.SimulationType;
+import org.jerry.code.constant.SimulationValue;
 import org.jerry.code.dto.DynamicItemDTO;
 import org.jerry.code.dto.GenerateDTO;
 import org.jerry.code.service.ISaveTableService;
 import lombok.extern.slf4j.Slf4j;
+import org.jerry.code.tool.RandDataTool;
+import org.jerry.code.tool.RandomIDGenerator;
+import org.jerry.code.vo.DMLVo;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -17,6 +26,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -35,21 +45,107 @@ public class SaveTableServiceImpl implements ISaveTableService {
     }
 
     @Override
-    public List<String> generateDML(GenerateDTO generateDTO) {
+    public DMLVo generateDML(GenerateDTO generateDTO) {
+        JSONArray jsonArray = new JSONArray();
+        JSONArray headList = new JSONArray();
         StringBuffer dml = new StringBuffer("```sql\n");
+        for (int j = 0; j < generateDTO.getDynamicItem().size(); j++) {
+            DynamicItemDTO itemDTO = generateDTO.getDynamicItem().get(j);
+            JSONObject head = new JSONObject();
+            if (itemDTO.getSimulationType().equals(SimulationType.noSimulation.getCode())){
+                continue;
+            }
+            head.put("prop",itemDTO.getColumnName());
+            head.put("label",itemDTO.getFieldAnnotate()+"("+(itemDTO.getColumnName())+")");
+            headList.add(head);
+        }
         for (int i = 0; i < generateDTO.getAnalogNumber(); i++) {
+            JSONObject jsonObject = new JSONObject();
             dml.append("INSERT INTO ").append(generateDTO.getTableName()).append(" (");
             for (int j = 0; j < generateDTO.getDynamicItem().size(); j++) {
-                dml.append(generateDTO.getDynamicItem().get(j).getColumnName());
+                DynamicItemDTO itemDTO = generateDTO.getDynamicItem().get(j);
+                if (itemDTO.getSimulationType().equals(SimulationType.noSimulation.getCode())){
+                    continue;
+                }
+
+                dml.append(itemDTO.getColumnName());
                 // 如果不是最后一个列，则添加逗号分隔
-                if (i < generateDTO.getDynamicItem().size() - 1) {
+                if (j < generateDTO.getDynamicItem().size() - 1) {
                     dml.append(",");
                 }
             }
             dml.append(") VALUE (");
-
+            for (int y = 0; y < generateDTO.getDynamicItem().size(); y++) {
+                DynamicItemDTO itemDTO = generateDTO.getDynamicItem().get(y);
+                if (itemDTO.getSimulationType().equals(SimulationType.noSimulation.getCode())){
+                    continue;
+                }
+                switch (Objects.requireNonNull(SimulationType.getByCode(itemDTO.getSimulationType()))) {
+                    case fixed:
+                        jsonObject.put(itemDTO.getColumnName(), itemDTO.getSimulationValue());
+                        dml.append("'").append(itemDTO.getSimulationValue()).append("'");
+                        break;
+                    case random:
+                        switch (SimulationValue.getByCode(itemDTO.getSimulationValue())) {
+                            case name:
+                                String name = RandDataTool.name();
+                                jsonObject.put(itemDTO.getColumnName(), name);
+                                dml.append("'" + name + "'");
+                                break;
+                            case adderess:
+                                String road = RandDataTool.getRoad();
+                                jsonObject.put(itemDTO.getColumnName(), road);
+                                dml.append("'" + road + "'");
+                                break;
+                            case idCard:
+                                String idCard = RandomIDGenerator.generateRandomID();
+                                jsonObject.put(itemDTO.getColumnName(), idCard);
+                                dml.append("'" + idCard + "'");
+                                break;
+                            case email:
+                                String email = RandDataTool.email(9, 17);
+                                jsonObject.put(itemDTO.getColumnName(), email);
+                                dml.append("'" + email + "'");
+                                break;
+                            case phone:
+                                String tel = RandDataTool.tel();
+                                jsonObject.put(itemDTO.getColumnName(), tel);
+                                dml.append("'" + tel + "'");
+                                break;
+                            case garbage:
+                                String gar = RandDataTool.getRandomHanZiNoSpace(30);
+                                jsonObject.put(itemDTO.getColumnName(), gar);
+                                dml.append("'" + gar + "'");
+                                break;
+                        }
+                        break;
+                    case incremental:
+                        int incremental = Integer.parseInt(itemDTO.getSimulationValue()) + i;
+                        jsonObject.put(itemDTO.getColumnName(), incremental);
+                        dml.append("'" + incremental + "'");
+                        break;
+                    case rule:
+                        Generex generex = new Generex(itemDTO.getSimulationValue());
+                        String randomed = generex.random();
+                        jsonObject.put(itemDTO.getColumnName(), randomed);
+                        dml.append("'" + randomed + "'");
+                }
+                // 如果不是最后一个列，则添加逗号分隔
+                if (y < generateDTO.getDynamicItem().size() - 1) {
+                    dml.append(",");
+                } else {
+                    dml.append(");\n");
+                }
+            }
+            jsonArray.add(jsonObject);
         }
-        return Collections.EMPTY_LIST;
+        dml.append("```");
+        DMLVo dmlVo = new DMLVo();
+        dmlVo.setDml(dml.toString());
+        dmlVo.setDmlList(jsonArray);
+        dmlVo.setHeadDmlList(headList);
+        dmlVo.setDmlJson("```json\n"+ JSON.toJSONString(jsonArray)+"\n```");
+        return dmlVo;
     }
 
     @Override

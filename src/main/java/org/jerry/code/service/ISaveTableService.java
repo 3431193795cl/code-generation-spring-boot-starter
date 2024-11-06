@@ -1,6 +1,7 @@
 package org.jerry.code.service;
 
 import org.jerry.code.dto.GenerateDTO;
+import org.jerry.code.vo.DMLVo;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface ISaveTableService {
      * @param generateDTO
      * @return
      */
-    List<String> generateDML(GenerateDTO generateDTO);
+    DMLVo generateDML(GenerateDTO generateDTO);
 
     /**
      * 生成DDL语句

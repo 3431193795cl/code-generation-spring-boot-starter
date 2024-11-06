@@ -63,7 +63,7 @@
                                               placeholder="描述表的中文名称、作用等"></el-input>
                                 </el-form-item>
                                 <el-form-item label="生成条数">
-                                    <el-input type="number" v-model="form.tableComment"
+                                    <el-input type="number" v-model="form.analogNumber"
                                               placeholder="描述表的中文名称、作用等"></el-input>
                                 </el-form-item>
                                 <div v-for="(item, index) in form.dynamicItem" :key="index">
@@ -243,8 +243,17 @@
                         <el-tab-pane label="模拟数据">
                             <el-card class="box-card">
                                 <div>
-                                    <el-empty v-if="!result_dml" description="结果为空"></el-empty>
-                                    <div v-else v-html="result_dml">
+                                    <el-empty v-if="!result_table_data" description="结果为空"></el-empty>
+                                    <div v-else>
+                                        <el-table
+                                                :data="result_table_data"
+                                                style="width: 100%"
+                                        >
+                                            <el-table-column v-for="(item,key) in titleData" :key="key"
+                                                             :prop="item.prop"
+                                                             :label="item.label"></el-table-column>
+
+                                        </el-table>
                                     </div>
                                 </div>
                             </el-card>
@@ -441,7 +450,8 @@
                 ],
                 result_ddl: null,
                 result_dml: null,
-                result: [],
+                result_table_data: [],
+                result_head_data: [],
                 result_json: null,
                 result_java: null,
             };
@@ -478,7 +488,7 @@
             },
             //一键生成
             oneKeyGeneration() {
-                // this.generateDDL()
+                this.generateDDL()
                 this.generateDML()
             },
             generateDDL() {
@@ -498,21 +508,19 @@
                     })
             },
             generateDML() {
-                const form = JSON.parse(JSON.stringify(this.form));
-                if (this.haveCommonObject(form.dynamicItem, this.universalize_list)) {
-                    const array = form.dynamicItem.concat(this.universalize_list)
-                    form.dynamicItem = this.removeList(array)
-                }
                 fetch("/table/generateDML", {
                     method: 'POST', // 或者 'PUT'，取决于你的 API 要求
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(form)
+                    body: JSON.stringify(this.form)
                 }).then(response => response.json())
                     .then(data => {
                         console.log(data)
-                        this.result_dml = marked.parse(data.data)
+                        this.result_dml = marked.parse(data.data.dml)
+                        this.result_table_data = data.data.dmlList
+                        this.result_head_data = data.data.headDmlList
+                        this.result_json = marked.parse(data.data.dmljson)
                     })
                     .catch((error) => {
                         console.error('Error:', error);
@@ -521,7 +529,7 @@
             haveCommonObject(arr1, arr2) {
                 return arr1.some(obj1 => arr2.some(obj2 => JSON.stringify(obj1) === JSON.stringify(obj2)));
             },
-            removeList(data){
+            removeList(data) {
                 // 创建一个字典来记录每个 columnName 的出现次数和索引位置
                 let countDict = {};
                 data.forEach((item, index) => {
