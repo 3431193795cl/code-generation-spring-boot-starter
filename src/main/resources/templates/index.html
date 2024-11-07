@@ -220,10 +220,10 @@
                                                     建表语句
                                                 </el-col>
                                                 <el-col :span="6" :offset="16">
-                                                    <el-button size="mini">复制</el-button>
+                                                    <el-button class="btn" size="mini" @click="copyHtmlDDL" data-clipboard-target="#result_ddl">复制</el-button>
                                                 </el-col>
                                             </template>
-                                            <div v-html="result_ddl"></div>
+                                            <div v-html="result_ddl" id="result_ddl"></div>
                                         </el-collapse-item>
                                         <el-collapse-item name="2">
                                             <template slot="title">
@@ -231,10 +231,10 @@
                                                     插入语句
                                                 </el-col>
                                                 <el-col :span="6" :offset="16">
-                                                    <el-button size="mini">复制</el-button>
+                                                    <el-button class="btn" size="mini" @click="copyHtmlDML" data-clipboard-target="#result_dml">复制</el-button>
                                                 </el-col>
                                             </template>
-                                            <div v-html="result_dml"></div>
+                                            <div v-html="result_dml" id="result_dml"></div>
                                         </el-collapse-item>
                                     </el-collapse>
                                 </div>
@@ -249,7 +249,7 @@
                                                 :data="result_table_data"
                                                 style="width: 100%"
                                         >
-                                            <el-table-column v-for="(item,key) in titleData" :key="key"
+                                            <el-table-column v-for="(item,key) in result_head_data" :key="key"
                                                              :prop="item.prop"
                                                              :label="item.label"></el-table-column>
 
@@ -262,7 +262,10 @@
                             <el-card class="box-card">
                                 <div>
                                     <el-empty v-if="!result_json" description="结果为空"></el-empty>
-                                    <div v-else v-html="result_json">
+                                    <div v-else>
+                                        <el-button class="btn" size="mini" @click="copyHtmlJSON" data-clipboard-target="#result_json">复制</el-button>
+                                        <pre v-html="result_json" id="result_json">
+                                        </pre>
                                     </div>
                                 </div>
                             </el-card>
@@ -293,6 +296,11 @@
 <!-- import JavaScript -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/clipboard.js/2.0.10/clipboard.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-jsonview/1.2.3/jquery.jsonview.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-jsonview/1.2.3/jquery.jsonview.min.css"/>
 <script>
     new Vue({
         el: '#app',
@@ -476,6 +484,58 @@
                     simulationValue: null,
                 })
             },
+            //复制html
+            copyHtmlDDL() {
+                let clipboard = new ClipboardJS('.btn');
+                // 创建一个临时的textarea元素
+                clipboard.on('success', function (e) {
+                    console.info('Action:', e.action);
+                    console.info('Text:', e.text);
+                    console.info('Trigger:', e.trigger);
+                    //注销对象
+                    e.clearSelection();
+                });
+
+                clipboard.on('error', function (e) {
+                    console.error('Action:', e.action);
+                    console.error('Trigger:', e.trigger);
+                });
+            },
+            //复制html
+            copyHtmlDML() {
+                // 创建一个临时的textarea元素
+                let clipboard = new ClipboardJS('.btn');
+                // 创建一个临时的textarea元素
+                clipboard.on('success', function (e) {
+                    console.info('Action:', e.action);
+                    console.info('Text:', e.text);
+                    console.info('Trigger:', e.trigger);
+                    //注销对象
+                    e.clearSelection();
+                });
+
+                clipboard.on('error', function (e) {
+                    console.error('Action:', e.action);
+                    console.error('Trigger:', e.trigger);
+                });
+            },
+            copyHtmlJSON(){
+                // 创建一个临时的textarea元素
+                let clipboard = new ClipboardJS('.btn');
+                // 创建一个临时的textarea元素
+                clipboard.on('success', function (e) {
+                    console.info('Action:', e.action);
+                    console.info('Text:', e.text);
+                    console.info('Trigger:', e.trigger);
+                    //注销对象
+                    e.clearSelection();
+                });
+
+                clipboard.on('error', function (e) {
+                    console.error('Action:', e.action);
+                    console.error('Trigger:', e.trigger);
+                });
+            },
             //删除字段
             delField(item) {
                 //表示先获取这个元素的下标，然后从这个下标开始计算，删除长度为1的元素
@@ -516,11 +576,10 @@
                     body: JSON.stringify(this.form)
                 }).then(response => response.json())
                     .then(data => {
-                        console.log(data)
                         this.result_dml = marked.parse(data.data.dml)
                         this.result_table_data = data.data.dmlList
                         this.result_head_data = data.data.headDmlList
-                        this.result_json = marked.parse(data.data.dmljson)
+                        this.result_json = JSON.stringify(JSON.parse(data.data.dmlJson), null, '\t')
                     })
                     .catch((error) => {
                         console.error('Error:', error);

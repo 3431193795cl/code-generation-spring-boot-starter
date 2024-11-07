@@ -144,7 +144,8 @@ public class SaveTableServiceImpl implements ISaveTableService {
         dmlVo.setDml(dml.toString());
         dmlVo.setDmlList(jsonArray);
         dmlVo.setHeadDmlList(headList);
-        dmlVo.setDmlJson("```json\n"+ JSON.toJSONString(jsonArray)+"\n```");
+//        dmlVo.setDmlJson("```json\n"+ JSON.toJSONString(jsonArray)+"\n```");
+        dmlVo.setDmlJson(JSON.toJSONString(jsonArray));
         return dmlVo;
     }
 
