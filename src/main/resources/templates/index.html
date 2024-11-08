@@ -190,7 +190,7 @@
                                     </el-button>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button class="add_btn" plain icon="el-icon-plus">导入字段</el-button>
+                                    <el-button class="add_btn" plain icon="el-icon-plus" @click="importField">导入建表SQL</el-button>
                                 </el-form-item>
                                 <el-form-item>
                                     <el-button class="add_btn" plain icon="el-icon-plus" @click="addUniversalField">
@@ -220,7 +220,9 @@
                                                     建表语句
                                                 </el-col>
                                                 <el-col :span="6" :offset="16">
-                                                    <el-button class="btn" size="mini" @click="copyHtmlDDL" data-clipboard-target="#result_ddl">复制</el-button>
+                                                    <el-button class="btn" size="mini" @click="copyHtml"
+                                                               data-clipboard-target="#result_ddl">复制
+                                                    </el-button>
                                                 </el-col>
                                             </template>
                                             <div v-html="result_ddl" id="result_ddl"></div>
@@ -231,7 +233,9 @@
                                                     插入语句
                                                 </el-col>
                                                 <el-col :span="6" :offset="16">
-                                                    <el-button class="btn" size="mini" @click="copyHtmlDML" data-clipboard-target="#result_dml">复制</el-button>
+                                                    <el-button class="btn" size="mini" @click="copyHtml"
+                                                               data-clipboard-target="#result_dml">复制
+                                                    </el-button>
                                                 </el-col>
                                             </template>
                                             <div v-html="result_dml" id="result_dml"></div>
@@ -263,7 +267,9 @@
                                 <div>
                                     <el-empty v-if="!result_json" description="结果为空"></el-empty>
                                     <div v-else>
-                                        <el-button class="btn" size="mini" @click="copyHtmlJSON" data-clipboard-target="#result_json">复制</el-button>
+                                        <el-button class="btn" size="mini" @click="copyHtml"
+                                                   data-clipboard-target="#result_json">复制
+                                        </el-button>
                                         <pre v-html="result_json" id="result_json">
                                         </pre>
                                     </div>
@@ -273,8 +279,18 @@
                         <el-tab-pane label="Java代码">
                             <el-card class="box-card">
                                 <div>
-                                    <el-empty v-if="!result_java" description="结果为空"></el-empty>
-                                    <div v-else v-html="result_java">
+                                    <el-empty v-if="!result_ddl" description="结果为空"></el-empty>
+                                    <div v-else>
+                                        <el-collapse>
+                                            <el-collapse-item title="生成设置" name="1">
+                                                <div>
+                                                    与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；
+                                                </div>
+                                                <div>
+                                                    在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。
+                                                </div>
+                                            </el-collapse-item>
+                                        </el-collapse>
                                     </div>
                                 </div>
                             </el-card>
@@ -289,6 +305,8 @@
             <p>版权所有：jerry mouse</p>
         </el-footer>
     </el-container>
+
+    <import_field ref="import_field"></import_field>
 </div>
 </body>
 <!-- import Vue before Element -->
@@ -296,11 +314,8 @@
 <!-- import JavaScript -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
 <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/clipboard.js/2.0.10/clipboard.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-jsonview/1.2.3/jquery.jsonview.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-jsonview/1.2.3/jquery.jsonview.min.css"/>
+<script src="/static/js/import_field.js"></script>
 <script>
     new Vue({
         el: '#app',
@@ -484,57 +499,29 @@
                     simulationValue: null,
                 })
             },
-            //复制html
-            copyHtmlDDL() {
-                let clipboard = new ClipboardJS('.btn');
-                // 创建一个临时的textarea元素
-                clipboard.on('success', function (e) {
-                    console.info('Action:', e.action);
-                    console.info('Text:', e.text);
-                    console.info('Trigger:', e.trigger);
-                    //注销对象
-                    e.clearSelection();
-                });
-
-                clipboard.on('error', function (e) {
-                    console.error('Action:', e.action);
-                    console.error('Trigger:', e.trigger);
-                });
+            //导入字段
+            importField(){
+                this.$refs.import_field.dialogFormVisible = true
             },
             //复制html
-            copyHtmlDML() {
-                // 创建一个临时的textarea元素
+            copyHtml() {
+                let that = this
                 let clipboard = new ClipboardJS('.btn');
                 // 创建一个临时的textarea元素
-                clipboard.on('success', function (e) {
-                    console.info('Action:', e.action);
-                    console.info('Text:', e.text);
-                    console.info('Trigger:', e.trigger);
+                clipboard.on('success', () => {
+                    that.$message({
+                        message: '复制成功',
+                        type: 'success'
+                    });
                     //注销对象
-                    e.clearSelection();
+                    clipboard.destroy();
                 });
 
-                clipboard.on('error', function (e) {
-                    console.error('Action:', e.action);
-                    console.error('Trigger:', e.trigger);
-                });
-            },
-            copyHtmlJSON(){
-                // 创建一个临时的textarea元素
-                let clipboard = new ClipboardJS('.btn');
-                // 创建一个临时的textarea元素
-                clipboard.on('success', function (e) {
-                    console.info('Action:', e.action);
-                    console.info('Text:', e.text);
-                    console.info('Trigger:', e.trigger);
-                    //注销对象
-                    e.clearSelection();
+                clipboard.on('error', () => {
+                    clipboard.destroy();
+                    that.$message.error("复制失败");
                 });
 
-                clipboard.on('error', function (e) {
-                    console.error('Action:', e.action);
-                    console.error('Trigger:', e.trigger);
-                });
             },
             //删除字段
             delField(item) {
