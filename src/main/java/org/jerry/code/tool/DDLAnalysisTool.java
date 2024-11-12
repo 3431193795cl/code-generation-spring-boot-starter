@@ -2,20 +2,34 @@ package org.jerry.code.tool;
 
 import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
+import net.sf.jsqlparser.statement.create.table.Index;
 import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.List;
 
+import static net.sf.jsqlparser.util.validation.metadata.NamedObject.column;
+
 public class DDLAnalysisTool implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private static final String DDL_FIELD_NOT = "NOT";
+
+    private static final String DDL_FIELD_NULL = "NULL";
+
+    private static final String DDL_AUTO_INCREMENT = "AUTO_INCREMENT";
+
+    private static final String DDL_FIELD_PRIMARY = "PRIMARY";
+
+    private static final String DDL_FIELD_KEY = "KEY";
 
     private DDLAnalysisTool() {
     }
 
     /**
      * 获取表注释
+     *
      * @param createTable
      * @return
      */
@@ -25,7 +39,7 @@ public class DDLAnalysisTool implements Serializable {
         for (int i = 0; i < stringList.size(); i++) {
             String spec = stringList.get(i);
             if (spec.toUpperCase().startsWith("COMMENT")) {
-                tableComment = stringList.get(i + 2);
+                tableComment = stringList.get(i + 1);
                 int start = tableComment.indexOf('\'');
                 int end = tableComment.lastIndexOf('\'');
                 if (start != -1 && end != -1 && start < end) {
@@ -64,6 +78,7 @@ public class DDLAnalysisTool implements Serializable {
 
     /**
      * 获取字段默认值
+     *
      * @param columnSpecs
      * @return
      */
@@ -85,6 +100,12 @@ public class DDLAnalysisTool implements Serializable {
         return defaultValue;
     }
 
+    /**
+     * 获取字段长度
+     *
+     * @param columnDefinition
+     * @return
+     */
     public static String getFieldLength(ColumnDefinition columnDefinition) {
         String length = null;
         if (!CollectionUtils.isEmpty(columnDefinition.getColDataType().getArgumentsStringList())) {
@@ -92,5 +113,69 @@ public class DDLAnalysisTool implements Serializable {
             length = "(" + String.join(", ", columnDefinition.getColDataType().getArgumentsStringList()) + ")";
         }
         return length;
+    }
+
+    /**
+     * 获取字段是否为空
+     *
+     * @param columnSpecs
+     * @return
+     */
+    public static Boolean getFieldIsNull(List<String> columnSpecs) {
+        Boolean isNull = false;
+        if (columnSpecs.contains(DDL_FIELD_NOT) && columnSpecs.contains(DDL_FIELD_NULL)) {
+            isNull = true;
+        } else if (columnSpecs.contains(DDL_FIELD_NULL)) {
+            isNull = false;
+        }
+        return isNull;
+    }
+
+    /**
+     * 获取字段自动更新值
+     *
+     * @param columnSpecs
+     * @return
+     */
+    public static String getFieldOnUpdate(List<String> columnSpecs) {
+        String onUpdate = null;
+        if (columnSpecs.contains("ON") && columnSpecs.contains("UPDATE")) {
+            for (int i = 0; i < columnSpecs.size(); i++) {
+                String spec = columnSpecs.get(i);
+                if (spec.toUpperCase().startsWith("UPDATE")) {
+                    onUpdate = columnSpecs.get(i + 1);
+                    int start = onUpdate.indexOf('\'');
+                    int end = onUpdate.lastIndexOf('\'');
+                    if (start != -1 && end != -1 && start < end) {
+                        onUpdate = onUpdate.substring(start + 1, end);
+                    } else {
+                        onUpdate = ""; // 或者其他默认值
+                    }
+                }
+            }
+        }
+        return onUpdate;
+    }
+
+    /**
+     * 获取字段是否自增
+     * @param columnSpecs
+     * @return
+     */
+    public static Boolean getFieldAutoIncrement(List<String> columnSpecs) {
+        return columnSpecs.contains(DDL_AUTO_INCREMENT);
+    }
+
+    /**
+     * 获取字段是否为主键
+     * @param columnSpecs
+     * @return
+     */
+    public static Boolean getFieldPrimaryKey(List<String> columnSpecs) {
+        Boolean isPrimaryKey = false;
+        if (columnSpecs.contains(DDL_FIELD_PRIMARY) && columnSpecs.contains(DDL_FIELD_KEY)) {
+            isPrimaryKey = true;
+        }
+        return isPrimaryKey;
     }
 }

@@ -25,5 +25,5 @@ public interface ISaveTableService {
     String generateDDL(GenerateDTO generateDTO);
 
 
-    JSONObject parsingSql(String sqlDdl);
+    GenerateDTO parsingSql(String sqlDdl);
 }

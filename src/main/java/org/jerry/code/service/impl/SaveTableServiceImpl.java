@@ -12,6 +12,7 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.create.table.ColDataType;
 import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
+import net.sf.jsqlparser.statement.create.table.Index;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 import org.jerry.code.config.CodeGenerationProperties;
@@ -207,30 +208,25 @@ public class SaveTableServiceImpl implements ISaveTableService {
 
 
     @Override
-    public JSONObject parsingSql(String sqlDdl) {
-
-        return new JSONObject();
-    }
-
-
-    public static void main(String[] args) {
-        String sql = "--用户信息\n" +
-                "CREATE TABLE IF NOT EXISTS user_info (\n" +
-                "\tid varchar(30) NOT NULL PRIMARY KEY COMMENT '主键',\n" +
-                "\tcreate_by varchar(30) NULL COMMENT '创建人',\n" +
-                "\tcreate_time datetime DEFAULT 'CURRENT_TIMESTAMP' NOT NULL COMMENT '创建时间',\n" +
-                "\tupdate_by varchar(30) NULL COMMENT '更新人',\n" +
-                "\tupdate_time datetime DEFAULT 'CURRENT_TIMESTAMP' NOT NULL ON UPDATE 'CURRENT_TIMESTAMP' COMMENT '更新时间',\n" +
-                "\tis_deleted int DEFAULT '0' NOT NULL COMMENT '是否删除：(0:未删 1：删除 )',\n" +
-                "\tuser_name varchar(30) NULL COMMENT '用户姓名',\n" +
-                "\taddress varchar(225) NULL COMMENT '用户住址'\n" +
-                ") COMMENT = '用户信息' charset = utf8;";
+    public GenerateDTO parsingSql(String sqlDdl) {
         try {
-            getCreateTableInfo(sql);
+            JSONObject jsonObject = JSON.parseObject(sqlDdl);
+            return getCreateTableInfo(jsonObject.getString("sql"));
         } catch (JSQLParserException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
+
+//    public static void main(String[] args) {
+//        String sql = "CREATE TABLE sys_user_info (\n" +
+//                "  user_id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '用户编号',\n" +
+//                "  user_name varchar(255) NOT NULL COMMENT '用户名',\n" +
+//                "  status tinyint(1) NOT NULL COMMENT '状态',\n" +
+//                "  create_time datetime NOT NULL COMMENT '创建时间'\n" +
+//                ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户信息';";
+//        GenerateDTO generateDTO = new SaveTableServiceImpl().parsingSql(sql);
+//    }
+
 
     /**
      * 根据SQL语句获取表名和建表参数
@@ -239,31 +235,42 @@ public class SaveTableServiceImpl implements ISaveTableService {
      * @return
      * @throws JSQLParserException
      */
-    private static GenerateDTO getCreateTableInfo(String sql) throws JSQLParserException {
+    private GenerateDTO getCreateTableInfo(String sql) throws JSQLParserException {
         GenerateDTO generateDTO = new GenerateDTO();
         CreateTable createTable = (CreateTable) CCJSqlParserUtil.parse(sql);
         Table table = createTable.getTable();
-        System.out.println("Table Name: " + table.getName());
-        generateDTO.setTableName(table.getName());
         String tableComment = DDLAnalysisTool.getTableComment(createTable);
-        generateDTO.setTableName(tableComment);
+        System.out.println("表名: " + table.getName() + "，表注释：" + tableComment);
         List<DynamicItemDTO> dynamicItemDTOS = new ArrayList<>();
         List<ColumnDefinition> list = createTable.getColumnDefinitions();
-        for (ColumnDefinition d : list) {
+        generateDTO.setTableName(table.getName());
+        generateDTO.setTableComment(tableComment);
+        for (ColumnDefinition columnDefinition : list) {
+
+            String length = DDLAnalysisTool.getFieldLength(columnDefinition);
+            String comment = DDLAnalysisTool.getFieldAnnotate(columnDefinition.getColumnSpecs());
+            String def = DDLAnalysisTool.getFieldDefault(columnDefinition.getColumnSpecs());
+            Boolean isNull = DDLAnalysisTool.getFieldIsNull(columnDefinition.getColumnSpecs());
+            String onUpdate = DDLAnalysisTool.getFieldOnUpdate(columnDefinition.getColumnSpecs());
+            Boolean autoIncrement = DDLAnalysisTool.getFieldAutoIncrement(columnDefinition.getColumnSpecs());
+            Boolean primaryKey = DDLAnalysisTool.getFieldPrimaryKey(columnDefinition.getColumnSpecs());
+
             DynamicItemDTO dynamicItemDTO = new DynamicItemDTO();
-            dynamicItemDTO.setColumnName(d.getColumnName());
-            String length = DDLAnalysisTool.getFieldLength(d);
-            dynamicItemDTO.setFieldType(d.getColDataType().getDataType() + length);
-            System.out.println("列名:" + d.getColumnName() + "  ,列类型:" + d.getColDataType().getDataType() + "  长度:"
-                    + length);
-            // 获取列的注释
-            String comment = DDLAnalysisTool.getFieldAnnotate(d.getColumnSpecs());
-            String def = DDLAnalysisTool.getFieldDefault(d.getColumnSpecs());
-            System.out.println("Comment: " + comment);
-            System.out.println("def: " + def);
+            dynamicItemDTO.setColumnName(columnDefinition.getColumnName());
+            dynamicItemDTO.setFieldType(StringUtils.isEmpty(length) ? columnDefinition.getColDataType().getDataType() : columnDefinition.getColDataType().getDataType() + length);
             dynamicItemDTO.setFieldAnnotate(comment);
             dynamicItemDTO.setFieldDefault(def);
+            dynamicItemDTO.setIsNull(isNull);
+            dynamicItemDTO.setIncrement(autoIncrement);
+            dynamicItemDTO.setFieldOnUpdate(onUpdate);
+            dynamicItemDTO.setPrimaryKey(primaryKey);
+
+            dynamicItemDTOS.add(dynamicItemDTO);
+            System.out.println("列名:" + columnDefinition.getColumnName() + "  ,列类型:" + columnDefinition.getColDataType().getDataType()
+                    + "  长度:" + length + ", 备注：" + comment + "，默认：" + def + "， 是否为空：" + isNull
+                    + "，更新：" + onUpdate + "，是否自增：" + autoIncrement + "，是否主键：" + primaryKey);
         }
+        generateDTO.setDynamicItem(dynamicItemDTOS);
         return generateDTO;
     }
 
