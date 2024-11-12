@@ -9,4 +9,9 @@ public class IndexController {
     public String index() {
         return "index"; // 确保有一个名为 index 的视图文件
     }
+
+    @GetMapping("/generate")
+    public String generate() {
+        return "generate"; // 确保有一个名为 index 的视图文件
+    }
 }

@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!--    <link rel="stylesheet" href="/css/index.css">-->
+    <link rel="stylesheet" href="../static/css/index.css">
+    <title>生成器</title>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header height="100px">
+            <el-menu
+                    :default-active="activeIndex"
+                    class="el-menu-demo"
+                    mode="horizontal"
+                    @select="handleSelect"
+            >
+                <!-- Logo 图片 -->
+                <el-menu-item index="logo">
+                    <!--                    <img src="/img/fatherfocode.png" class="logo" href="#"/>-->
+                    <img src="../static/img/fatherfocode.png" class="logo" href="#"/>
+                </el-menu-item>
+
+                <!-- 其他菜单项 -->
+                <el-menu-item index="1"><a href="/index" target="_blank">首页</a></el-menu-item>
+                <el-menu-item index="2">数据源</el-menu-item>
+                <el-menu-item index="3"><a href="/generate" target="_blank">生成器</a></el-menu-item>
+                <el-menu-item index="4">联系我们</el-menu-item>
+            </el-menu>
+
+        </el-header>
+        <el-main height="600px">
+            <el-row :gutter="20">
+                <el-col :span="12">
+                    <el-card class="box-card">
+                        <!--头部信息-->
+                        <div slot="header" class="clearfix">
+                            <span>输入配置</span>
+                            <el-select disabled class="select" v-model="db_type_value" placeholder="请选择">
+                                <el-option
+                                        v-for="item in db_type_list"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <!--表单信息-->
+                        <div>
+                            <el-form ref="form" :model="form">
+                                <el-form-item label="库名">
+                                    <el-input v-model="form.dataBase"
+                                              placeholder="库名：多个单词词建议用下划线分隔"></el-input>
+                                </el-form-item>
+                                <el-form-item label="表名" required>
+                                    <el-input v-model="form.tableName" placeholder="test_table"></el-input>
+                                </el-form-item>
+                                <el-form-item label="表注释">
+                                    <el-input v-model="form.tableComment"
+                                              placeholder="描述表的中文名称、作用等"></el-input>
+                                </el-form-item>
+                                <el-form-item label="生成条数">
+                                    <el-input type="number" v-model="form.analogNumber"
+                                              placeholder="描述表的中文名称、作用等"></el-input>
+                                </el-form-item>
+                                <div v-for="(item, index) in form.dynamicItem" :key="index">
+                                    <el-collapse @change="handleChange">
+                                        <el-collapse-item :name="index">
+                                            <!--title 信息-->
+                                            <template slot="title">
+                                                <el-col :span="14">
+                                                    <el-input v-model="item.columnName"
+                                                              placeholder="字段名"></el-input>
+                                                </el-col>
+                                                <el-col :span="6" :offset="8">
+                                                    <el-button type="text">保存</el-button>
+                                                    <el-button type="text" style="color: #ff0000"
+                                                               @click="delField(item)">删除
+                                                    </el-button>
+                                                </el-col>
+                                            </template>
+                                            <!--主要信息-->
+                                            <div>
+                                                <el-row :gutter="24">
+                                                    <el-col :span="8">
+                                                        <el-form-item label="字段类型">
+                                                            <el-input v-model="item.fieldType"
+                                                                      placeholder="如：varchar(225)"></el-input>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                    <el-col :span="8">
+                                                        <el-form-item label="默认值">
+                                                            <el-input v-model="item.fieldDefault"
+                                                                      placeholder="如：varchar(225)"></el-input>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                    <el-col :span="8">
+                                                        <el-form-item label="注释">
+                                                            <el-input v-model="item.fieldAnnotate"
+                                                                      placeholder="如：varchar(225)"></el-input>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                </el-row>
+                                                <el-row :gutter="20">
+                                                    <el-col :span="8">
+                                                        <el-form-item label="onUpdate">
+                                                            <el-input v-model="item.fieldOnUpdate"
+                                                                      placeholder="如：varchar(225)"></el-input>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                    <el-col :span="16" style="margin-top: 38px">
+                                                        <el-col :span="6">
+                                                            <el-form-item label="非空">
+                                                                <el-checkbox v-model="item.isNull">
+                                                                </el-checkbox>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="6">
+                                                            <el-form-item label="主键">
+                                                                <el-checkbox v-model="item.primaryKey">
+                                                                </el-checkbox>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="6">
+                                                            <el-form-item label="自增">
+                                                                <el-checkbox v-model="item.increment">
+                                                                </el-checkbox>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                    </el-col>
+                                                </el-row>
+                                                <el-row :gutter="24">
+                                                    <el-col :span="12">
+                                                        <el-form-item label="模拟类型">
+                                                            <el-select v-model="item.simulationType"
+                                                                       placeholder="请选择">
+                                                                <el-option
+                                                                        v-for="item in simulationType_list"
+                                                                        :key="item.value"
+                                                                        :label="item.label"
+                                                                        :value="item.value">
+                                                                </el-option>
+                                                            </el-select>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                    <el-col :span="12" v-if="item.simulationType != 10005">
+                                                        <el-form-item label="固定值"
+                                                                      v-if="item.simulationType == 10001">
+                                                            <el-input
+                                                                    v-model="item.simulationValue"
+                                                                    placeholder="如：1，2，3，4"></el-input>
+                                                        </el-form-item>
+                                                        <el-form-item label="随机值"
+                                                                      v-if="item.simulationType == 10002">
+                                                            <el-select
+                                                                    v-model="item.simulationValue"
+                                                                    placeholder="请选择">
+                                                                <el-option
+                                                                        v-for="item in random_list"
+                                                                        :key="item.value"
+                                                                        :label="item.label"
+                                                                        :value="item.value">
+                                                                </el-option>
+                                                            </el-select>
+                                                        </el-form-item>
+                                                        <el-form-item label="递增值"
+                                                                      v-if="item.simulationType == 10003">
+                                                            <el-input-number
+                                                                    v-model="item.simulationValue"
+                                                                    controls-position="right" step="1" :min="1"
+                                                                    :max="10"></el-input-number>
+                                                        </el-form-item>
+                                                        <el-form-item label="规则"
+                                                                      v-if="item.simulationType == 10004">
+                                                            <el-input
+                                                                    v-model="item.simulationValue"
+                                                                    placeholder="如：正则表达式"></el-input>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                </el-row>
+                                            </div>
+                                        </el-collapse-item>
+                                    </el-collapse>
+                                </div>
+                                <el-form-item>
+                                    <el-button class="add_btn" plain icon="el-icon-plus" @click="addField">新增字段
+                                    </el-button>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button class="add_btn" plain icon="el-icon-plus" @click="importField">导入建表SQL</el-button>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button class="add_btn" plain icon="el-icon-plus" @click="addUniversalField">
+                                        新增通用字段
+                                    </el-button>
+                                </el-form-item>
+
+                                <el-form-item>
+                                    <el-button type="primary" @click="oneKeyGeneration">一键生成</el-button>
+                                    <el-button @click="saveTable">保存表</el-button>
+                                    <el-button @click="reset">重置</el-button>
+                                </el-form-item>
+                            </el-form>
+                        </div>
+                    </el-card>
+                </el-col>
+                <el-col :span="12">
+                    <el-tabs type="border-card">
+                        <el-tab-pane label="SQL代码">
+                            <el-card>
+                                <el-empty v-if="!result_ddl" description="结果为空"></el-empty>
+                                <div v-else>
+                                    <el-collapse border-radius="0px">
+                                        <el-collapse-item name="1">
+                                            <template slot="title">
+                                                <el-col :span="14">
+                                                    建表语句
+                                                </el-col>
+                                                <el-col :span="6" :offset="16">
+                                                    <el-button class="btn" size="mini" @click="copyHtml"
+                                                               data-clipboard-target="#result_ddl">复制
+                                                    </el-button>
+                                                </el-col>
+                                            </template>
+                                            <div v-html="result_ddl" id="result_ddl"></div>
+                                        </el-collapse-item>
+                                        <el-collapse-item name="2">
+                                            <template slot="title">
+                                                <el-col :span="14">
+                                                    插入语句
+                                                </el-col>
+                                                <el-col :span="6" :offset="16">
+                                                    <el-button class="btn" size="mini" @click="copyHtml"
+                                                               data-clipboard-target="#result_dml">复制
+                                                    </el-button>
+                                                </el-col>
+                                            </template>
+                                            <div v-html="result_dml" id="result_dml"></div>
+                                        </el-collapse-item>
+                                    </el-collapse>
+                                </div>
+                            </el-card>
+                        </el-tab-pane>
+                        <el-tab-pane label="模拟数据">
+                            <el-card class="box-card">
+                                <div>
+                                    <el-empty v-if="!result_table_data" description="结果为空"></el-empty>
+                                    <div v-else>
+                                        <el-table
+                                                :data="result_table_data"
+                                                style="width: 100%"
+                                        >
+                                            <el-table-column v-for="(item,key) in result_head_data" :key="key"
+                                                             :prop="item.prop"
+                                                             :label="item.label"></el-table-column>
+
+                                        </el-table>
+                                    </div>
+                                </div>
+                            </el-card>
+                        </el-tab-pane>
+                        <el-tab-pane label="JSON数据">
+                            <el-card class="box-card">
+                                <div>
+                                    <el-empty v-if="!result_json" description="结果为空"></el-empty>
+                                    <div v-else>
+                                        <el-button class="btn" size="mini" @click="copyHtml"
+                                                   data-clipboard-target="#result_json">复制
+                                        </el-button>
+                                        <pre v-html="result_json" id="result_json">
+                                        </pre>
+                                    </div>
+                                </div>
+                            </el-card>
+                        </el-tab-pane>
+                        <el-tab-pane label="Java代码">
+                            <el-card class="box-card">
+                                <div>
+                                    <el-empty v-if="!result_ddl" description="结果为空"></el-empty>
+                                    <div v-else>
+                                        <el-collapse>
+                                            <el-collapse-item title="生成设置" name="1">
+                                                <div>
+                                                    与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；
+                                                </div>
+                                                <div>
+                                                    在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。
+                                                </div>
+                                            </el-collapse-item>
+                                        </el-collapse>
+                                    </div>
+                                </div>
+                            </el-card>
+                        </el-tab-pane>
+                    </el-tabs>
+                </el-col>
+            </el-row>
+        </el-main>
+        <el-footer>
+            <p>站长： jerry mouse <i class="el-icon-document-delete"></i> <a href="mailto:3431193795@qq.com">意见反馈</a>
+            </p>
+            <p>版权所有：jerry mouse</p>
+        </el-footer>
+    </el-container>
+
+    <import_field ref="import_field" @submit="parsingSql"></import_field>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script src="/static/js/import_field.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                activeIndex: '1',
+                form: {
+                    dataBase: '',
+                    tableName: '',
+                    tableComment: '',
+                    analogNumber: 0,
+                    dynamicItem: []
+                },
+                db_type_value: 1,
+                db_type_list: [
+                    {
+                        value: 1,
+                        label: 'MySQL'
+                    },
+                    {
+                        value: 2,
+                        label: 'Oracle'
+                    },
+                    {
+                        value: 3,
+                        label: 'SQL Server'
+                    },
+                    {
+                        value: 4,
+                        label: 'PostgreSQL'
+                    }
+                ],
+                simulationType_list: [
+                    {
+                        value: 10001,
+                        label: '固定'
+                    },
+                    {
+                        value: 10002,
+                        label: '随机'
+                    },
+                    {
+                        value: 10003,
+                        label: '递增'
+                    },
+                    {
+                        value: 10004,
+                        label: '规则'
+                    },
+                    {
+                        value: 10005,
+                        label: '不模拟'
+                    },
+                ],
+                random_list: [
+                    {
+                        value: 1000201,
+                        label: '人名'
+                    },
+                    {
+                        value: 1000202,
+                        label: '地址'
+                    },
+                    {
+                        value: 1000203,
+                        label: '身份证号码'
+                    },
+                    {
+                        value: 1000204,
+                        label: '邮箱地址'
+                    },
+                    {
+                        value: 1000205,
+                        label: '手机号码'
+                    },
+                    {
+                        value: 1000206,
+                        label: '废话'
+                    },
+
+                ],
+                universalize_list: [
+                    {
+                        columnName: 'id',
+                        fieldType: 'varchar(30)',
+                        fieldDefault: null,
+                        fieldAnnotate: '主键',
+                        fieldOnUpdate: '',
+                        isNull: true,
+                        primaryKey: true,
+                        increment: true,
+                        simulationType: 10005,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'create_by',
+                        fieldType: 'varchar(30)',
+                        fieldDefault: null,
+                        fieldAnnotate: '创建人',
+                        fieldOnUpdate: '',
+                        isNull: false,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10005,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'create_time',
+                        fieldType: 'datetime',
+                        fieldDefault: 'CURRENT_TIMESTAMP',
+                        fieldAnnotate: '创建时间',
+                        fieldOnUpdate: '',
+                        isNull: true,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10005,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'update_by',
+                        fieldType: 'varchar(30)',
+                        fieldDefault: null,
+                        fieldAnnotate: '更新人',
+                        fieldOnUpdate: '',
+                        isNull: false,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10005,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'update_time',
+                        fieldType: 'datetime',
+                        fieldDefault: 'CURRENT_TIMESTAMP',
+                        fieldAnnotate: '更新时间',
+                        fieldOnUpdate: 'CURRENT_TIMESTAMP',
+                        isNull: true,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10005,
+                        simulationValue: null,
+                    },
+                    {
+                        columnName: 'is_deleted',
+                        fieldType: 'int',
+                        fieldDefault: 0,
+                        fieldAnnotate: '是否删除：(0:未删 1：删除 )',
+                        fieldOnUpdate: null,
+                        isNull: true,
+                        primaryKey: false,
+                        increment: false,
+                        simulationType: 10005,
+                        simulationValue: null,
+                    }
+                ],
+                result_ddl: null,
+                result_dml: null,
+                result_table_data: [],
+                result_head_data: [],
+                result_json: null,
+                result_java: null,
+            };
+        },
+        methods: {
+            handleFalse(e) {
+                // 阻止粘贴和剪切事件
+                e.preventDefault();
+            },
+            //添加字段
+            addField() {
+                this.form.dynamicItem.push({
+                    columnName: null,
+                    fieldType: null,
+                    fieldDefault: null,
+                    fieldAnnotate: null,
+                    fieldOnUpdate: null,
+                    isNull: false,
+                    primaryKey: false,
+                    increment: false,
+                    simulationType: 10005,
+                    simulationValue: null,
+                })
+            },
+            //导入字段
+            importField(){
+                this.$refs.import_field.dialogFormVisible = true
+            },
+            //复制html
+            copyHtml() {
+                let that = this
+                let clipboard = new ClipboardJS('.btn');
+                // 创建一个临时的textarea元素
+                clipboard.on('success', () => {
+                    that.$message({
+                        message: '复制成功',
+                        type: 'success'
+                    });
+                    //注销对象
+                    clipboard.destroy();
+                });
+
+                clipboard.on('error', () => {
+                    clipboard.destroy();
+                    that.$message.error("复制失败");
+                });
+
+            },
+            //删除字段
+            delField(item) {
+                //表示先获取这个元素的下标，然后从这个下标开始计算，删除长度为1的元素
+                this.form.dynamicItem.splice(this.form.dynamicItem.indexOf(item), 1);
+            },
+            // 添加通用字段
+            addUniversalField() {
+                this.form.dynamicItem = this.form.dynamicItem.concat(this.universalize_list)
+                this.form.dynamicItem = this.form.dynamicItem.filter((item, index) => this.form.dynamicItem.indexOf(item) === index);
+            },
+            //一键生成
+            oneKeyGeneration() {
+                this.generateDDL()
+                this.generateDML()
+                this.generateJava()
+            },
+            generateDDL() {
+                fetch("/table/generateDDL", {
+                    method: 'POST', // 或者 'PUT'，取决于你的 API 要求
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(this.form)
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        this.result_ddl = marked.parse(data.data.ddl)
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    })
+            },
+            generateDML() {
+                fetch("/table/generateDML", {
+                    method: 'POST', // 或者 'PUT'，取决于你的 API 要求
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(this.form)
+                }).then(response => response.json())
+                    .then(data => {
+                        this.result_dml = marked.parse(data.data.dml)
+                        this.result_table_data = data.data.dmlList
+                        this.result_head_data = data.data.headDmlList
+                        this.result_json = JSON.stringify(JSON.parse(data.data.dmlJson), null, '\t')
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    })
+            },
+            generateJava(){
+                fetch("/table/generateJava", {
+                    method: 'POST', // 或者 'PUT'，取决于你的 API 要求
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(this.form)
+                }).then(response => response.json())
+                    .then(data => {
+                        this.result_java = marked.parse(data.data.java)
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    })
+            },
+            parsingSql(sql){
+                console.log(sql)
+                fetch("/table/parsingSql", {
+                    method: 'POST', // 或者 'PUT'，取决于你的 API 要求
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({sql: sql})
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        this.form.dynamicItem = data.data.dynamicItem
+                        this.form.tableName = data.data.tableName
+                        this.form.tableComment = data.data.tableComment
+                    })
+            },
+            haveCommonObject(arr1, arr2) {
+                return arr1.some(obj1 => arr2.some(obj2 => JSON.stringify(obj1) === JSON.stringify(obj2)));
+            },
+            removeList(data) {
+                // 创建一个字典来记录每个 columnName 的出现次数和索引位置
+                let countDict = {};
+                data.forEach((item, index) => {
+                    if (!countDict[item.columnName]) {
+                        countDict[item.columnName] = [];
+                    }
+                    countDict[item.columnName].push(index);
+                });
+
+                // 找出那些出现一次的 columnName 对应的索引位置
+                let indicesToRemove = new Set();
+                for (let key in countDict) {
+                    if (countDict[key].length === 1) {
+                        countDict[key].forEach(index => indicesToRemove.add(index));
+                    } else {
+                        countDict[key].forEach(index => indicesToRemove.add(index)); // 添加所有索引位置，因为需要删除两次出现的项
+                    }
+                }
+
+// 从后往前删除元素，避免索引变化问题
+                let sortedIndices = Array.from(indicesToRemove).sort((a, b) => b - a);
+                sortedIndices.forEach(index => {
+                    data.splice(index, 1);
+                });
+
+                console.log(data);
+                return data;
+            },
+            saveTable() {
+                fetch("/table/save", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            tableName: this.return_results
+                        }),
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    }
+                ).then(res => {
+                    console.log(res)
+                })
+            },
+            //重置
+            reset() {
+                this.form = {
+                    dataBase: '',
+                    tableName: '',
+                    tableComment: '',
+                    analogNumber: 0,
+                    dynamicItem: []
+                }
+                this.result_dml = ''
+                this.result_ddl = ''
+            },
+        }
+    });
+</script>
+</html>
