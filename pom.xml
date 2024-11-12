@@ -92,5 +92,15 @@
             <artifactId>generex</artifactId>
             <version>1.0.2</version>
         </dependency>
+
+        <!--ddl 解析工具-->
+        <!-- https://mvnrepository.com/artifact/com.github.jsqlparser/jsqlparser -->
+        <dependency>
+            <groupId>com.github.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
+            <version>4.9</version>
+        </dependency>
+
+
     </dependencies>
 </project>

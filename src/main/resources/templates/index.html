@@ -306,7 +306,7 @@
         </el-footer>
     </el-container>
 
-    <import_field ref="import_field"></import_field>
+    <import_field ref="import_field" @submit="parsingSql"></import_field>
 </div>
 </body>
 <!-- import Vue before Element -->
@@ -570,6 +570,21 @@
                     })
                     .catch((error) => {
                         console.error('Error:', error);
+                    })
+            },
+            parsingSql(sql){
+                console.log(sql)
+                fetch("/table/parsingSql", {
+                    method: 'POST', // 或者 'PUT'，取决于你的 API 要求
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({sql: sql})
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        this.form.dynamicItem = data.data.dynamicItem
+                        this.form.tableName = data.data.tableName
                     })
             },
             haveCommonObject(arr1, arr2) {

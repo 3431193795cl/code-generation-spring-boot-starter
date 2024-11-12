@@ -4,13 +4,23 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.mifmif.common.regex.Generex;
+import lombok.extern.slf4j.Slf4j;
+import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.schema.Table;
+import net.sf.jsqlparser.statement.Statement;
+import net.sf.jsqlparser.statement.create.table.ColDataType;
+import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
+import net.sf.jsqlparser.statement.create.table.CreateTable;
+import net.sf.jsqlparser.statement.select.PlainSelect;
+import net.sf.jsqlparser.util.TablesNamesFinder;
 import org.jerry.code.config.CodeGenerationProperties;
 import org.jerry.code.constant.SimulationType;
 import org.jerry.code.constant.SimulationValue;
 import org.jerry.code.dto.DynamicItemDTO;
 import org.jerry.code.dto.GenerateDTO;
 import org.jerry.code.service.ISaveTableService;
-import lombok.extern.slf4j.Slf4j;
+import org.jerry.code.tool.DDLAnalysisTool;
 import org.jerry.code.tool.RandDataTool;
 import org.jerry.code.tool.RandomIDGenerator;
 import org.jerry.code.vo.DMLVo;
@@ -18,12 +28,13 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.thymeleaf.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +48,7 @@ public class SaveTableServiceImpl implements ISaveTableService {
 
     @Resource
     private CodeGenerationProperties conf;
+
 
     @Override
     public Boolean saveTable(String tableName) {
@@ -52,11 +64,11 @@ public class SaveTableServiceImpl implements ISaveTableService {
         for (int j = 0; j < generateDTO.getDynamicItem().size(); j++) {
             DynamicItemDTO itemDTO = generateDTO.getDynamicItem().get(j);
             JSONObject head = new JSONObject();
-            if (itemDTO.getSimulationType().equals(SimulationType.noSimulation.getCode())){
+            if (itemDTO.getSimulationType().equals(SimulationType.noSimulation.getCode())) {
                 continue;
             }
-            head.put("prop",itemDTO.getColumnName());
-            head.put("label",itemDTO.getFieldAnnotate()+"("+(itemDTO.getColumnName())+")");
+            head.put("prop", itemDTO.getColumnName());
+            head.put("label", itemDTO.getFieldAnnotate() + "(" + (itemDTO.getColumnName()) + ")");
             headList.add(head);
         }
         for (int i = 0; i < generateDTO.getAnalogNumber(); i++) {
@@ -64,7 +76,7 @@ public class SaveTableServiceImpl implements ISaveTableService {
             dml.append("INSERT INTO ").append(generateDTO.getTableName()).append(" (");
             for (int j = 0; j < generateDTO.getDynamicItem().size(); j++) {
                 DynamicItemDTO itemDTO = generateDTO.getDynamicItem().get(j);
-                if (itemDTO.getSimulationType().equals(SimulationType.noSimulation.getCode())){
+                if (itemDTO.getSimulationType().equals(SimulationType.noSimulation.getCode())) {
                     continue;
                 }
 
@@ -77,7 +89,7 @@ public class SaveTableServiceImpl implements ISaveTableService {
             dml.append(") VALUE (");
             for (int y = 0; y < generateDTO.getDynamicItem().size(); y++) {
                 DynamicItemDTO itemDTO = generateDTO.getDynamicItem().get(y);
-                if (itemDTO.getSimulationType().equals(SimulationType.noSimulation.getCode())){
+                if (itemDTO.getSimulationType().equals(SimulationType.noSimulation.getCode())) {
                     continue;
                 }
                 switch (Objects.requireNonNull(SimulationType.getByCode(itemDTO.getSimulationType()))) {
@@ -175,12 +187,12 @@ public class SaveTableServiceImpl implements ISaveTableService {
             if (!StringUtils.isEmpty(column.getFieldOnUpdate())) {
                 ddl.append(" ON UPDATE '" + column.getFieldOnUpdate() + "'");
             }
-            // 添加列的注释
-            ddl.append(" COMMENT '" + column.getFieldAnnotate() + "'");
             // 如果当前列是主键，则添加PRIMARY KEY约束
             if (column.getPrimaryKey()) {
                 ddl.append(" PRIMARY KEY");
             }
+            // 添加列的注释
+            ddl.append(" COMMENT '" + column.getFieldAnnotate() + "'");
             // 如果不是最后一个列，则添加逗号分隔
             if (i < generateDTO.getDynamicItem().size() - 1) {
                 ddl.append(",");
@@ -194,45 +206,66 @@ public class SaveTableServiceImpl implements ISaveTableService {
     }
 
 
-    /**
-     * 根据表名和列信息生成INSERT INTO SQL语句
-     *
-     * @param tableName 表名
-     * @param columns   表列信息的列表
-     * @return 生成的INSERT INTO SQL语句
-     */
-    private String generateSQL(String tableName, List<DynamicItemDTO> columns) {
-        // 使用StringBuilder来拼接SQL语句，提高效率
-        StringBuilder sql = new StringBuilder();
-        // 开始拼接SQL语句，首先添加INSERT INTO关键字和表名
-        sql.append("INSERT INTO ").append(tableName).append(" (");
-        // 遍历列信息列表，拼接列名
-        for (int i = 0; i < columns.size(); i++) {
-            // 获取当前列信息
-            DynamicItemDTO column = columns.get(i);
-            // 拼接列名和列键
-            sql.append(" ").append(column.getColumnName());
-            // 如果不是最后一个列，添加逗号分隔
-            if (i < columns.size() - 1) {
-                sql.append(",");
-            }
-        }
-        sql.append(") VALUES (");
-        for (int i = 0; i < columns.size(); i++) {
-            // 获取当前列信息
-            DynamicItemDTO column = columns.get(i);
-            // 拼接列值
-            sql.append(" ").append("?");
-            // 如果不是最后一个列，添加逗号分隔
-            if (i < columns.size() - 1) {
-                sql.append(",");
-            }
-        }
-        sql.append(");");
-        // 返回拼接完成的SQL语句
-        return sql.toString();
+    @Override
+    public JSONObject parsingSql(String sqlDdl) {
+
+        return new JSONObject();
     }
 
+
+    public static void main(String[] args) {
+        String sql = "--用户信息\n" +
+                "CREATE TABLE IF NOT EXISTS user_info (\n" +
+                "\tid varchar(30) NOT NULL PRIMARY KEY COMMENT '主键',\n" +
+                "\tcreate_by varchar(30) NULL COMMENT '创建人',\n" +
+                "\tcreate_time datetime DEFAULT 'CURRENT_TIMESTAMP' NOT NULL COMMENT '创建时间',\n" +
+                "\tupdate_by varchar(30) NULL COMMENT '更新人',\n" +
+                "\tupdate_time datetime DEFAULT 'CURRENT_TIMESTAMP' NOT NULL ON UPDATE 'CURRENT_TIMESTAMP' COMMENT '更新时间',\n" +
+                "\tis_deleted int DEFAULT '0' NOT NULL COMMENT '是否删除：(0:未删 1：删除 )',\n" +
+                "\tuser_name varchar(30) NULL COMMENT '用户姓名',\n" +
+                "\taddress varchar(225) NULL COMMENT '用户住址'\n" +
+                ") COMMENT = '用户信息' charset = utf8;";
+        try {
+            getCreateTableInfo(sql);
+        } catch (JSQLParserException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 根据SQL语句获取表名和建表参数
+     *
+     * @param sql sql语句
+     * @return
+     * @throws JSQLParserException
+     */
+    private static GenerateDTO getCreateTableInfo(String sql) throws JSQLParserException {
+        GenerateDTO generateDTO = new GenerateDTO();
+        CreateTable createTable = (CreateTable) CCJSqlParserUtil.parse(sql);
+        Table table = createTable.getTable();
+        System.out.println("Table Name: " + table.getName());
+        generateDTO.setTableName(table.getName());
+        String tableComment = DDLAnalysisTool.getTableComment(createTable);
+        generateDTO.setTableName(tableComment);
+        List<DynamicItemDTO> dynamicItemDTOS = new ArrayList<>();
+        List<ColumnDefinition> list = createTable.getColumnDefinitions();
+        for (ColumnDefinition d : list) {
+            DynamicItemDTO dynamicItemDTO = new DynamicItemDTO();
+            dynamicItemDTO.setColumnName(d.getColumnName());
+            String length = DDLAnalysisTool.getFieldLength(d);
+            dynamicItemDTO.setFieldType(d.getColDataType().getDataType() + length);
+            System.out.println("列名:" + d.getColumnName() + "  ,列类型:" + d.getColDataType().getDataType() + "  长度:"
+                    + length);
+            // 获取列的注释
+            String comment = DDLAnalysisTool.getFieldAnnotate(d.getColumnSpecs());
+            String def = DDLAnalysisTool.getFieldDefault(d.getColumnSpecs());
+            System.out.println("Comment: " + comment);
+            System.out.println("def: " + def);
+            dynamicItemDTO.setFieldAnnotate(comment);
+            dynamicItemDTO.setFieldDefault(def);
+        }
+        return generateDTO;
+    }
 
     /**
      * 检查指定名称的表是否存在

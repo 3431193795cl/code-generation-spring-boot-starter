@@ -1,6 +1,5 @@
 package org.jerry.code.controller;
 
-import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.RequiredArgsConstructor;
 import org.jerry.code.api.Result;
@@ -33,5 +32,10 @@ public class SaveTableController {
         JSONObject json = new JSONObject();
         json.put("ddl", saveTableService.generateDDL(generateDTO));
         return Result.ok(json);
+    }
+
+    @PostMapping("parsingSql")
+    public Result<?> parsingSql(@RequestBody String tableName) {
+        return Result.ok(saveTableService.parsingSql(tableName));
     }
 }
