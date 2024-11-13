@@ -26,4 +26,6 @@ public interface ISaveTableService {
 
 
     GenerateDTO parsingSql(String sqlDdl);
+
+    JSONObject getPackageInfo();
 }

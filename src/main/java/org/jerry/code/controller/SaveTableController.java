@@ -38,4 +38,9 @@ public class SaveTableController {
     public Result<?> parsingSql(@RequestBody String tableName) {
         return Result.ok(saveTableService.parsingSql(tableName));
     }
+
+    @PostMapping("getPackageInfo")
+    public Result<?> getPackageInfo() {
+        return Result.ok(saveTableService.getPackageInfo());
+    }
 }

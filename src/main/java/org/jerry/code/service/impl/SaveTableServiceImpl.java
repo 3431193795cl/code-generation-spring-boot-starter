@@ -24,6 +24,7 @@ import org.jerry.code.service.ISaveTableService;
 import org.jerry.code.tool.DDLAnalysisTool;
 import org.jerry.code.tool.RandDataTool;
 import org.jerry.code.tool.RandomIDGenerator;
+import org.jerry.code.tool.StringTool;
 import org.jerry.code.vo.DMLVo;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -217,15 +218,26 @@ public class SaveTableServiceImpl implements ISaveTableService {
         }
     }
 
-//    public static void main(String[] args) {
-//        String sql = "CREATE TABLE sys_user_info (\n" +
-//                "  user_id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '用户编号',\n" +
-//                "  user_name varchar(255) NOT NULL COMMENT '用户名',\n" +
-//                "  status tinyint(1) NOT NULL COMMENT '状态',\n" +
-//                "  create_time datetime NOT NULL COMMENT '创建时间'\n" +
-//                ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户信息';";
-//        GenerateDTO generateDTO = new SaveTableServiceImpl().parsingSql(sql);
-//    }
+    @Override
+    public JSONObject getPackageInfo() {
+        //版本信息
+        String version = "1.0.1";
+        // 获取Java版本
+        String javaVersion = System.getProperty("java.version");
+        // 获取JVM名称
+        String jvmName = System.getProperty("java.vm.name");
+        // 获取Classpath路径
+        String classPath =  StringTool.wrapTextBySymbol(System.getProperty("java.class.path"),';');
+        // 操作系统名称
+        String osName = System.getProperty("os.name");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("version", version);
+        jsonObject.put("java_version", javaVersion);
+        jsonObject.put("jvm_name", jvmName);
+        jsonObject.put("class_path", classPath);
+        jsonObject.put("os_name", osName);
+        return jsonObject;
+    }
 
 
     /**

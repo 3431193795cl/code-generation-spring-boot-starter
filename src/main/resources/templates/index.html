@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <!-- import CSS -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <!--    <link rel="stylesheet" href="/css/index.css">-->
     <link rel="stylesheet" href="../static/css/index.css">
     <title>首页</title>
 </head>
@@ -13,10 +12,8 @@
     <el-container>
         <el-header height="100px">
             <el-menu
-                    :default-active="activeIndex"
                     class="el-menu-demo"
                     mode="horizontal"
-                    @select="handleSelect"
             >
                 <!-- Logo 图片 -->
                 <el-menu-item index="logo">
@@ -25,15 +22,31 @@
                 </el-menu-item>
 
                 <!-- 其他菜单项 -->
-                <el-menu-item index="1"><a href="/index" target="_blank">首页</a></el-menu-item>
-                <el-menu-item index="2">数据源</el-menu-item>
-                <el-menu-item index="3"><a href="/generate" target="_blank">生成器</a></el-menu-item>
+                <el-menu-item index="1"><a href="/code/index.html" style="text-decoration:none;">首页</a></el-menu-item>
+                <el-menu-item index="2"><a href="/code/data_source.html" style="text-decoration:none;">数据源</a></el-menu-item>
+                <el-menu-item index="3"><a href="/code/generate.html" style="text-decoration:none;">生成器</a></el-menu-item>
                 <el-menu-item index="4">联系我们</el-menu-item>
             </el-menu>
 
         </el-header>
         <el-main height="600px">
-
+            <el-row :gutter="12">
+                <el-col :span="16" :offset="4">
+                    <h3>Stat Index <span style="color: #5eb3dd">查看JSON API</span></h3>
+                    <el-table
+                            style="width: 100%"
+                            :data="getValues"
+                            :show-header="false"
+                    >
+                        <el-table-column
+                                v-for="(item, index) in getHeaders"
+                                :key="index"
+                                :prop="item"
+                        >
+                        </el-table-column>
+                    </el-table>
+                </el-col>
+            </el-row>
         </el-main>
         <el-footer>
             <p>站长： jerry mouse <i class="el-icon-document-delete"></i> <a href="mailto:3431193795@qq.com">意见反馈</a>
@@ -52,9 +65,68 @@
     new Vue({
         el: '#app',
         data() {
-            return {}
+            return {
+                headers: [
+                    {
+                        prop: 'version',
+                        label: '版本',
+                    },
+                    {
+                        prop: 'os_name',
+                        label: '系统名称',
+                    },
+                    {
+                        prop: 'java_version',
+                        label: 'java版本',
+                    },
+                    {
+                        prop: 'jvm_name',
+                        label: 'jvm名称',
+                    },
+                    {
+                        prop: 'class_path',
+                        label: 'classpath路径',
+                    },
+
+                ],
+                tableData: []
+            }
         },
-        methods: {}
+        computed: {
+            getHeaders() {
+                return this.tableData.reduce((pre, cur, index) => pre.concat(`value${index}`), ['title'])
+            },
+            getValues() {
+                return this.headers.map(item => {
+                    return this.tableData.reduce((pre, cur, index) => Object.assign(pre, {['value' + index]: cur[item.prop]}), {'title': item.label,});
+                });
+            },
+        },
+        mounted () {
+            this.getPackageInfo();
+        },
+        methods: {
+            getPackageInfo() {
+                fetch("/table/getPackageInfo", {
+                    method: 'POST', // 或者 'PUT'，取决于你的 API 要求
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        this.tableData.push(data.data)
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    })
+            }
+        }
     });
 </script>
+<style>
+    .el-table .cell {
+        white-space: pre-line;
+    }
+</style>
 </html>

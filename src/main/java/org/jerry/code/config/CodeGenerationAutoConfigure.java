@@ -40,8 +40,9 @@ public class CodeGenerationAutoConfigure implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/index").setViewName("index");
-        registry.addViewController("/generate").setViewName("generate");
+        registry.addViewController("/code/index.html").setViewName("index");
+        registry.addViewController("/code/generate.html").setViewName("generate");
+        registry.addViewController("/code/data_source.html").setViewName("data_source");
     }
 
     @Bean

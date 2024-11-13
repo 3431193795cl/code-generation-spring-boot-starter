@@ -200,10 +200,4 @@ public class RandDataTool {
         return stringBuffer.toString();
     }
 
-
-
-    public static void main(String[] args) {
-        System.out.println(getRandomHanZiNoSpace(300));
-    }
-
 }
