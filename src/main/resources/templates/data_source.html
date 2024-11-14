@@ -40,7 +40,8 @@
             <el-row class="container">
                 <el-col :span="6">
                     <div style="margin-top: 20px;">
-                        <el-card>
+
+                        <el-card :body-style="{maxHeight:'642px',height:'642px',overflowY:'auto'}">
                             <el-tree
                                     :data="data"
                                     :props="defaultProps"
@@ -55,14 +56,16 @@
                         <el-card>
                             <el-row :gutter="20">
                                 <el-col :span="3">
-                                    <el-button size="small" type="primary" icon="el-icon-refresh">清空（Clear）</el-button>
+                                    <el-button size="small" type="primary" icon="el-icon-refresh">清空（Clear）
+                                    </el-button>
                                 </el-col>
                                 <el-col :span="3">
-                                    <el-button size="small" type="primary" icon="el-icon-video-play">运行（Run）</el-button>
+                                    <el-button size="small" type="primary" icon="el-icon-video-play">运行（Run）
+                                    </el-button>
                                 </el-col>
                             </el-row>
                             <br/>
-                            <prism-editor class="my-editor" v-model="code" :highlight="highlighter"></prism-editor>
+                            <prism-editor class="my-editor" v-model="code" :highlight="highlighter" line-numbers></prism-editor>
                         </el-card>
                     </div>
                     <div class="container">
@@ -159,47 +162,58 @@
     body {
         font-family: Arial, sans-serif;
     }
+
     .logo {
         height: 50px;
         vertical-align: middle;
     }
+
     .el-menu-demo {
         background-color: #f5f5f5;
         border-bottom: none;
     }
+
     .el-menu-item {
         margin-right: 20px;
     }
+
     .el-menu-item a {
         text-decoration: none;
         color: #333;
     }
+
     .el-menu-item:hover {
         background-color: #e6f7ff;
     }
+
     .el-table {
         width: 100%;
         border: 1px solid #ddd;
         border-collapse: collapse;
     }
+
     .el-table th, .el-table td {
         border: 1px solid #ddd;
         padding: 8px;
         text-align: left;
     }
+
     .el-table th {
         background-color: #f2f2f2;
     }
+
     .el-footer {
         text-align: center;
         padding: 20px;
         background-color: #f9f9f9;
         border-top: 1px solid #ddd;
     }
+
     .el-footer p {
         margin: 0;
         line-height: 1.6;
     }
+
     .container {
         padding: 20px;
     }
@@ -213,10 +227,20 @@
     }
 
     .my-editor {
-        border: 1px solid #ebeef5; /* 给编辑器添加边框 */
-        border-radius: 4px; /* 圆角边框 */
-        background-color: #f7f8fa; /* 背景色 */
-        padding: 10px; /* 内边距 */
+        /* we dont use `language-` classes anymore so thats why we need to add background and text color manually */
+        background: #2d2d2d;
+        color: #ccc;
+
+        /* you must provide font-family font-size line-height. Example:*/
+        font-family: Fira code, Fira Mono, Consolas, Menlo, Courier, monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        padding: 5px;
+    }
+
+    /* optional class for removing the outline */
+    .prism-editor__textarea:focus {
+        outline: none;
     }
 
     .height-200 {
