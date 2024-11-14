@@ -13,17 +13,18 @@
 <body>
 <div id="app">
     <el-container>
-        <el-header height="100px">
+        <el-header>
             <el-menu
                     :default-active="activeIndex"
                     class="el-menu-demo"
                     mode="horizontal"
             >
                 <!-- Logo 图片 -->
+                <!-- Logo 图片 -->
                 <el-menu-item index="logo">
-                    <!--                    <img src="/img/fatherfocode.png" class="logo" href="#"/>-->
-                    <img src="../static/img/fatherfocode.png" class="logo" href="#"/>
+                    <img class="logo" src="../static/img/logo.png" alt="Logo"/>
                 </el-menu-item>
+
 
                 <!-- 其他菜单项 -->
                 <el-menu-item index="1"><a href="/code/index.html" style="text-decoration:none;">首页</a></el-menu-item>
@@ -36,27 +37,40 @@
 
         </el-header>
         <el-main height="600px">
-            <el-row>
+            <el-row class="container">
                 <el-col :span="6">
-                    <div>
-                        <el-tree :data="data"
-                                 :props="defaultProps"
-                                 @node-contextmenu="rightClick"
-                                 @node-click="treeNodeClick">
-                        </el-tree>
-                        <context-menu ref="contextMenu"></context-menu>
+                    <div style="margin-top: 20px;">
+                        <el-card>
+                            <el-tree
+                                    :data="data"
+                                    :props="defaultProps"
+                                    @node-contextmenu="rightClick"
+                                    @node-click="treeNodeClick">
+                            </el-tree>
+                        </el-card>
                     </div>
                 </el-col>
                 <el-col :span="18">
-                    <div>
-                        <prism-editor class="my-editor height-200" v-model="code" :highlight="highlighter"
-                                      line-numbers></prism-editor>
+                    <div class="container">
+                        <el-card>
+                            <el-row :gutter="20">
+                                <el-col :span="3">
+                                    <el-button size="small" type="primary" icon="el-icon-refresh">清空（Clear）</el-button>
+                                </el-col>
+                                <el-col :span="3">
+                                    <el-button size="small" type="primary" icon="el-icon-video-play">运行（Run）</el-button>
+                                </el-col>
+                            </el-row>
+                            <br/>
+                            <prism-editor class="my-editor" v-model="code" :highlight="highlighter"></prism-editor>
+                        </el-card>
                     </div>
-                    <div>
-
+                    <div class="container">
+                        <el-card>
+                            <el-empty description="结果为空"></el-empty>
+                        </el-card>
                     </div>
                 </el-col>
-
             </el-row>
         </el-main>
         <el-footer>
@@ -85,46 +99,15 @@
             return {
                 activeIndex: '2',
                 code: "SELECT * FROM data WHERE id=12323",
-                data: [{
-                    label: '一级 1',
-                    children: [{
-                        label: '二级 1-1',
-                        children: [{
-                            label: '三级 1-1-1'
-                        }]
-                    }]
-                }, {
-                    label: '一级 2',
-                    children: [{
-                        label: '二级 2-1',
-                        children: [{
-                            label: '三级 2-1-1'
-                        }]
-                    }, {
-                        label: '二级 2-2',
-                        children: [{
-                            label: '三级 2-2-1'
-                        }]
-                    }]
-                }, {
-                    label: '一级 3',
-                    children: [{
-                        label: '二级 3-1',
-                        children: [{
-                            label: '三级 3-1-1'
-                        }]
-                    }, {
-                        label: '二级 3-2',
-                        children: [{
-                            label: '三级 3-2-1'
-                        }]
-                    }]
-                }],
+                data: [],
                 defaultProps: {
                     children: 'children',
                     label: 'label'
                 }
             }
+        },
+        mounted() {
+            this.getTable();
         },
         methods: {
             highlighter(code) {
@@ -137,10 +120,10 @@
                 this.$refs.contextMenu.menuShow = true
                 this.$refs.contextMenu.table_name = data
                 e.preventDefault() //关闭浏览器右键默认事件
-                this.rightMenu = { top: e.pageY + 'px', left: e.pageX + 'px' }
-                document.addEventListener('click',(ev)=>{
+                this.rightMenu = {top: e.pageY + 'px', left: e.pageX + 'px'}
+                document.addEventListener('click', (ev) => {
                     // ev.stopImmediatePropagation()
-                    if(ev.target!==document.querySelector('.el-menu-item.is-active')){
+                    if (ev.target !== document.querySelector('.el-menu-item.is-active')) {
                         this.foo()
                     }
                 })
@@ -151,32 +134,93 @@
                 this.$refs.contextMenu.menuShow = false
                 document.removeEventListener('click', this.foo) // 关掉监听，
             },
-            treeNodeClick(){
+            treeNodeClick() {
                 this.foo()
+            },
+            getTable() {
+                fetch("/operate/tables", {
+                    method: 'POST', // 或者 'PUT'，取决于你的 API 要求
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        this.data = data.data
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    })
             },
         }
     });
 </script>
 <style>
-    .height-200 {
-        height: 200px
+    body {
+        font-family: Arial, sans-serif;
+    }
+    .logo {
+        height: 50px;
+        vertical-align: middle;
+    }
+    .el-menu-demo {
+        background-color: #f5f5f5;
+        border-bottom: none;
+    }
+    .el-menu-item {
+        margin-right: 20px;
+    }
+    .el-menu-item a {
+        text-decoration: none;
+        color: #333;
+    }
+    .el-menu-item:hover {
+        background-color: #e6f7ff;
+    }
+    .el-table {
+        width: 100%;
+        border: 1px solid #ddd;
+        border-collapse: collapse;
+    }
+    .el-table th, .el-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    .el-table th {
+        background-color: #f2f2f2;
+    }
+    .el-footer {
+        text-align: center;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-top: 1px solid #ddd;
+    }
+    .el-footer p {
+        margin: 0;
+        line-height: 1.6;
+    }
+    .container {
+        padding: 20px;
+    }
+
+    .el-row {
+        margin-bottom: 20px; /* 增加行与编辑器之间的距离 */
+    }
+
+    .el-button {
+        margin-left: 10px; /* 增加按钮之间的间距 */
     }
 
     .my-editor {
-        /* we dont use `language-` classes anymore so thats why we need to add background and text color manually */
-        background: #2d2d2d;
-        color: #ccc;
-
-        /* you must provide font-family font-size line-height. Example:*/
-        font-family: Fira code, Fira Mono, Consolas, Menlo, Courier, monospace;
-        font-size: 14px;
-        line-height: 1.5;
-        padding: 5px;
+        border: 1px solid #ebeef5; /* 给编辑器添加边框 */
+        border-radius: 4px; /* 圆角边框 */
+        background-color: #f7f8fa; /* 背景色 */
+        padding: 10px; /* 内边距 */
     }
 
-    /* optional class for removing the outline */
-    .prism-editor__textarea:focus {
-        outline: none;
+    .height-200 {
+        height: 200px; /* 设置编辑器高度 */
     }
 
     .tree_rightmenu {

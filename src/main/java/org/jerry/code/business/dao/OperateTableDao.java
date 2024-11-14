@@ -6,16 +6,25 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class OperateTableDao {
     @Resource
     private JdbcTemplate jdbcTemplate;
 
-    public JSONObject selectTables() {
-        JSONObject jsonObject = jdbcTemplate.queryForObject("SELECT DATABASE()", JSONObject.class);;
-        JSONArray showTables = jdbcTemplate.queryForObject("show tables", JSONArray.class);
-        jsonObject.put("tables", showTables);
-        return jsonObject;
+    public JSONArray selectTables() {
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("label", jdbcTemplate.queryForObject("SELECT DATABASE()", String.class));
+        jsonObject.put("children", jdbcTemplate.queryForList("show tables", String.class).stream().map(e -> {
+            JSONObject json = new JSONObject();
+            json.put("label", e);
+            return json;
+        }).collect(Collectors.toList()));
+        jsonArray.add(jsonObject);
+        return jsonArray;
     }
 }

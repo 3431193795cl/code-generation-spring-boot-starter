@@ -170,7 +170,7 @@ public class SaveTableServiceImpl implements ISaveTableService {
             ddl.append("\t" + column.getColumnName() + " " + column.getFieldType());
             // 如果当前列有默认值，则添加DEFAULT约束
             if (!StringUtils.isEmpty(column.getFieldDefault())) {
-                ddl.append(" DEFAULT '" + column.getFieldDefault() + "'");
+                ddl.append(" DEFAULT " + column.getFieldDefault());
             }
             // 如果当前列不允许为空，则添加NOT NULL约束
             if (column.getIsNull()) {
@@ -178,9 +178,13 @@ public class SaveTableServiceImpl implements ISaveTableService {
             } else {
                 ddl.append(" NULL");
             }
+            // 如果当前列不允许为空，则添加NOT NULL约束
+            if (column.getIncrement()) {
+                ddl.append(" AUTO_INCREMENT ");
+            }
             // 如果当前列有更新时的行为，则添加ON UPDATE约束
             if (!StringUtils.isEmpty(column.getFieldOnUpdate())) {
-                ddl.append(" ON UPDATE '" + column.getFieldOnUpdate() + "'");
+                ddl.append(" ON UPDATE " + column.getFieldOnUpdate());
             }
             // 如果当前列是主键，则添加PRIMARY KEY约束
             if (column.getPrimaryKey()) {
@@ -220,7 +224,7 @@ public class SaveTableServiceImpl implements ISaveTableService {
         // 获取JVM名称
         String jvmName = System.getProperty("java.vm.name");
         // 获取Classpath路径
-        String classPath =  StringTool.wrapTextBySymbol(System.getProperty("java.class.path"),';');
+        String classPath = StringTool.wrapTextBySymbol(System.getProperty("java.class.path"), ';');
         // 操作系统名称
         String osName = System.getProperty("os.name");
         JSONObject jsonObject = new JSONObject();

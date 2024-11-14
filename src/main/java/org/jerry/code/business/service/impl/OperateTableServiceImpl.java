@@ -17,7 +17,7 @@ public class OperateTableServiceImpl implements IOperateTableService {
     private OperateTableDao operateTableDao;
 
     @Override
-    public JSONObject getTables() {
+    public JSONArray getTables() {
         return operateTableDao.selectTables();
     }
 }

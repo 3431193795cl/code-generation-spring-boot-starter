@@ -5,5 +5,5 @@ import com.alibaba.fastjson2.JSONObject;
 
 public interface IOperateTableService {
 
-    public JSONObject getTables();
+    public JSONArray getTables();
 }

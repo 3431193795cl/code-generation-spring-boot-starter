@@ -11,7 +11,7 @@
 <body>
 <div id="app">
     <el-container>
-        <el-header height="100px">
+        <el-header>
             <el-menu
                     :default-active="activeIndex"
                     class="el-menu-demo"
@@ -20,8 +20,8 @@
             >
                 <!-- Logo 图片 -->
                 <el-menu-item index="logo">
-                    <!--                    <img src="/img/fatherfocode.png" class="logo" href="#"/>-->
-                    <img src="../static/img/fatherfocode.png" class="logo" href="#"/>
+                    <!--                    <img src="/img/logo.png" class="logo" href="#"/>-->
+                    <img src="../static/img/logo.png" class="logo" href="#"/>
                 </el-menu-item>
 
                 <!-- 其他菜单项 -->
@@ -66,77 +66,68 @@
                                     <el-input type="number" v-model="form.analogNumber"
                                               placeholder="描述表的中文名称、作用等"></el-input>
                                 </el-form-item>
-                                <div v-for="(item, index) in form.dynamicItem" :key="index">
+                                <div class="form-container" v-for="(item, index) in form.dynamicItem" :key="index">
                                     <el-collapse @change="handleChange">
                                         <el-collapse-item :name="index">
-                                            <!--title 信息-->
                                             <template slot="title">
-                                                <el-col :span="14">
-                                                    <el-input v-model="item.columnName"
-                                                              placeholder="字段名"></el-input>
-                                                </el-col>
-                                                <el-col :span="6" :offset="8">
-                                                    <el-button type="text">保存</el-button>
-                                                    <el-button type="text" style="color: #ff0000"
-                                                               @click="delField(item)">删除
-                                                    </el-button>
-                                                </el-col>
+                                                <div class="form-title">
+                                                    <el-row>
+                                                        <el-col :span="12"  class="form-buttons">
+                                                            <el-input v-model="item.columnName" placeholder="字段名"></el-input>
+                                                        </el-col>
+                                                        <el-col :span="12"  class="form-buttons">
+                                                            <el-button type="text">保存</el-button>
+                                                            <el-button type="text" style="color: #ff0000" @click="delField(item)">删除</el-button>
+                                                        </el-col>
+                                                    </el-row>
+                                                </div>
                                             </template>
-                                            <!--主要信息-->
                                             <div>
                                                 <el-row :gutter="24">
-                                                    <el-col :span="8">
-                                                        <el-form-item label="字段类型">
-                                                            <el-input v-model="item.fieldType"
-                                                                      placeholder="如：varchar(225)"></el-input>
+                                                    <el-col :span="8" class="form-item">
+                                                        <el-form-item label="字段类型" class="form-label">
+                                                            <el-input v-model="item.fieldType" placeholder="如：varchar(225)"></el-input>
                                                         </el-form-item>
                                                     </el-col>
-                                                    <el-col :span="8">
-                                                        <el-form-item label="默认值">
-                                                            <el-input v-model="item.fieldDefault"
-                                                                      placeholder="如：varchar(225)"></el-input>
+                                                    <el-col :span="8" class="form-item">
+                                                        <el-form-item label="默认值" class="form-label">
+                                                            <el-input v-model="item.fieldDefault" placeholder="如：varchar(225)"></el-input>
                                                         </el-form-item>
                                                     </el-col>
-                                                    <el-col :span="8">
-                                                        <el-form-item label="注释">
-                                                            <el-input v-model="item.fieldAnnotate"
-                                                                      placeholder="如：varchar(225)"></el-input>
+                                                    <el-col :span="8" class="form-item">
+                                                        <el-form-item label="注释" class="form-label">
+                                                            <el-input v-model="item.fieldAnnotate" placeholder="如：varchar(225)"></el-input>
                                                         </el-form-item>
                                                     </el-col>
                                                 </el-row>
                                                 <el-row :gutter="20">
-                                                    <el-col :span="8">
-                                                        <el-form-item label="onUpdate">
-                                                            <el-input v-model="item.fieldOnUpdate"
-                                                                      placeholder="如：varchar(225)"></el-input>
+                                                    <el-col :span="8" class="form-item">
+                                                        <el-form-item label="onUpdate" class="form-label">
+                                                            <el-input v-model="item.fieldOnUpdate" placeholder="如：varchar(225)"></el-input>
                                                         </el-form-item>
                                                     </el-col>
-                                                    <el-col :span="16" style="margin-top: 38px">
-                                                        <el-col :span="6">
+                                                    <el-col :span="16" class="form-item" style="margin-top: 38px">
+                                                        <el-col :span="6" class="form-checkbox">
                                                             <el-form-item label="非空">
-                                                                <el-checkbox v-model="item.isNull">
-                                                                </el-checkbox>
+                                                                <el-checkbox v-model="item.isNull"></el-checkbox>
                                                             </el-form-item>
                                                         </el-col>
-                                                        <el-col :span="6">
+                                                        <el-col :span="6" class="form-checkbox">
                                                             <el-form-item label="主键">
-                                                                <el-checkbox v-model="item.primaryKey">
-                                                                </el-checkbox>
+                                                                <el-checkbox v-model="item.primaryKey"></el-checkbox>
                                                             </el-form-item>
                                                         </el-col>
-                                                        <el-col :span="6">
+                                                        <el-col :span="6" class="form-checkbox">
                                                             <el-form-item label="自增">
-                                                                <el-checkbox v-model="item.increment">
-                                                                </el-checkbox>
+                                                                <el-checkbox v-model="item.increment"></el-checkbox>
                                                             </el-form-item>
                                                         </el-col>
                                                     </el-col>
                                                 </el-row>
                                                 <el-row :gutter="24">
-                                                    <el-col :span="12">
-                                                        <el-form-item label="模拟类型">
-                                                            <el-select v-model="item.simulationType"
-                                                                       placeholder="请选择">
+                                                    <el-col :span="12" class="form-item">
+                                                        <el-form-item label="模拟类型" class="form-label">
+                                                            <el-select v-model="item.simulationType" placeholder="请选择" class="form-select">
                                                                 <el-option
                                                                         v-for="item in simulationType_list"
                                                                         :key="item.value"
@@ -146,18 +137,12 @@
                                                             </el-select>
                                                         </el-form-item>
                                                     </el-col>
-                                                    <el-col :span="12" v-if="item.simulationType != 10005">
-                                                        <el-form-item label="固定值"
-                                                                      v-if="item.simulationType == 10001">
-                                                            <el-input
-                                                                    v-model="item.simulationValue"
-                                                                    placeholder="如：1，2，3，4"></el-input>
+                                                    <el-col :span="12" class="form-item" v-if="item.simulationType != 10005">
+                                                        <el-form-item label="固定值" class="form-label" v-if="item.simulationType == 10001">
+                                                            <el-input v-model="item.simulationValue" placeholder="如：1，2，3，4"></el-input>
                                                         </el-form-item>
-                                                        <el-form-item label="随机值"
-                                                                      v-if="item.simulationType == 10002">
-                                                            <el-select
-                                                                    v-model="item.simulationValue"
-                                                                    placeholder="请选择">
+                                                        <el-form-item label="随机值" class="form-label" v-if="item.simulationType == 10002">
+                                                            <el-select v-model="item.simulationValue" placeholder="请选择" class="form-select">
                                                                 <el-option
                                                                         v-for="item in random_list"
                                                                         :key="item.value"
@@ -166,18 +151,11 @@
                                                                 </el-option>
                                                             </el-select>
                                                         </el-form-item>
-                                                        <el-form-item label="递增值"
-                                                                      v-if="item.simulationType == 10003">
-                                                            <el-input-number
-                                                                    v-model="item.simulationValue"
-                                                                    controls-position="right" step="1" :min="1"
-                                                                    :max="10"></el-input-number>
+                                                        <el-form-item label="递增值" class="form-label" v-if="item.simulationType == 10003">
+                                                            <el-input-number v-model="item.simulationValue" controls-position="right" step="1" :min="1" :max="10" class="form-input-number"></el-input-number>
                                                         </el-form-item>
-                                                        <el-form-item label="规则"
-                                                                      v-if="item.simulationType == 10004">
-                                                            <el-input
-                                                                    v-model="item.simulationValue"
-                                                                    placeholder="如：正则表达式"></el-input>
+                                                        <el-form-item label="规则" class="form-label" v-if="item.simulationType == 10004">
+                                                            <el-input v-model="item.simulationValue" placeholder="如：正则表达式"></el-input>
                                                         </el-form-item>
                                                     </el-col>
                                                 </el-row>
@@ -400,7 +378,7 @@
                 universalize_list: [
                     {
                         columnName: 'id',
-                        fieldType: 'varchar(30)',
+                        fieldType: 'bigint',
                         fieldDefault: null,
                         fieldAnnotate: '主键',
                         fieldOnUpdate: '',

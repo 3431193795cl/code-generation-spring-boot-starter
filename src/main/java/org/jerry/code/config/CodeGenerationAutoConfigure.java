@@ -3,6 +3,7 @@ package org.jerry.code.config;
 import lombok.extern.slf4j.Slf4j;
 import org.jerry.code.business.controller.OperateTableController;
 import org.jerry.code.business.controller.SaveTableController;
+import org.jerry.code.business.dao.OperateTableDao;
 import org.jerry.code.business.service.IOperateTableService;
 import org.jerry.code.business.service.ISaveTableService;
 import org.jerry.code.business.service.impl.OperateTableServiceImpl;
@@ -36,7 +37,7 @@ public class CodeGenerationAutoConfigure implements WebMvcConfigurer {
     private Environment environment;
 
     @Bean
-    @ConfigurationProperties(prefix = "spring.datasource")
+    @ConfigurationProperties(prefix = "database")
     public DataSource dataSource() {
         DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.driverClassName(environment.getRequiredProperty("spring.datasource.driver-class-name"));
@@ -44,16 +45,6 @@ public class CodeGenerationAutoConfigure implements WebMvcConfigurer {
         dataSourceBuilder.username(environment.getRequiredProperty("spring.datasource.username"));
         dataSourceBuilder.password(environment.getRequiredProperty("spring.datasource.password"));
         return dataSourceBuilder.build();
-    }
-
-    @Bean
-    public ISaveTableService saveTableService() {
-        return new SaveTableServiceImpl();
-    }
-
-    @Bean
-    public IOperateTableService operateTableService() {
-        return new OperateTableServiceImpl();
     }
 
     @Override
@@ -72,6 +63,30 @@ public class CodeGenerationAutoConfigure implements WebMvcConfigurer {
         registry.addViewController("/code/generate.html").setViewName("generate");
         registry.addViewController("/code/data_source.html").setViewName("data_source");
     }
+
+
+    // 注册dao
+
+    @Bean
+    public OperateTableDao operateTableDao() {
+        return new OperateTableDao();
+    }
+
+
+    // 注册service
+
+    @Bean
+    public ISaveTableService saveTableService() {
+        return new SaveTableServiceImpl();
+    }
+
+    @Bean
+    public IOperateTableService operateTableService() {
+        return new OperateTableServiceImpl();
+    }
+
+
+    // 注册controller
 
     @Bean
     @ConditionalOnMissingBean
