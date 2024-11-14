@@ -1,4 +1,4 @@
-package org.jerry.code.constant;
+package org.jerry.code.toolkit.constant;
 
 /**
  * @PackageName: com.lzww.cd.pay.backend.constant

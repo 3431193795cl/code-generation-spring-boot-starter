@@ -1,4 +1,4 @@
-package org.jerry.code.vo;
+package org.jerry.code.business.vo;
 
 import com.alibaba.fastjson2.JSONArray;
 import lombok.Data;

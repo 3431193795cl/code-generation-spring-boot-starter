@@ -1,4 +1,4 @@
-package org.jerry.code.tool;
+package org.jerry.code.toolkit.tool;
 
 import java.io.Serializable;
 

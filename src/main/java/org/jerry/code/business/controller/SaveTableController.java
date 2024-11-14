@@ -1,10 +1,10 @@
-package org.jerry.code.controller;
+package org.jerry.code.business.controller;
 
 import com.alibaba.fastjson2.JSONObject;
 import lombok.RequiredArgsConstructor;
 import org.jerry.code.api.Result;
-import org.jerry.code.dto.GenerateDTO;
-import org.jerry.code.service.ISaveTableService;
+import org.jerry.code.business.dto.GenerateDTO;
+import org.jerry.code.business.service.ISaveTableService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

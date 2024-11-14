@@ -1,4 +1,4 @@
-package org.jerry.code.dto;
+package org.jerry.code.business.dto;
 
 import lombok.Data;
 

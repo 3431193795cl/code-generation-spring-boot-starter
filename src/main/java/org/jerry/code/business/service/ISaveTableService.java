@@ -1,8 +1,8 @@
-package org.jerry.code.service;
+package org.jerry.code.business.service;
 
 import com.alibaba.fastjson2.JSONObject;
-import org.jerry.code.dto.GenerateDTO;
-import org.jerry.code.vo.DMLVo;
+import org.jerry.code.business.dto.GenerateDTO;
+import org.jerry.code.business.vo.DMLVo;
 
 public interface ISaveTableService {
 

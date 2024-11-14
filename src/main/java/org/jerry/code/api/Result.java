@@ -1,7 +1,7 @@
 package org.jerry.code.api;
 
 import lombok.Data;
-import org.jerry.code.constant.CommonConstant;
+import org.jerry.code.toolkit.constant.CommonConstant;
 
 import java.io.Serializable;
 

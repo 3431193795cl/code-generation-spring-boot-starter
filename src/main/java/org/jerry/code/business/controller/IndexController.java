@@ -1,4 +1,4 @@
-package org.jerry.code.controller;
+package org.jerry.code.business.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

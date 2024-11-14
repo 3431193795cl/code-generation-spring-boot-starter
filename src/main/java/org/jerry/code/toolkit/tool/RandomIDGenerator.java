@@ -1,6 +1,5 @@
-package org.jerry.code.tool;
+package org.jerry.code.toolkit.tool;
 
-import com.mifmif.common.regex.Generex;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;

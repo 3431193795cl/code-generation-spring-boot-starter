@@ -1,14 +1,11 @@
-package org.jerry.code.tool;
+package org.jerry.code.toolkit.tool;
 
 import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
-import net.sf.jsqlparser.statement.create.table.Index;
 import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.List;
-
-import static net.sf.jsqlparser.util.validation.metadata.NamedObject.column;
 
 public class DDLAnalysisTool implements Serializable {
 

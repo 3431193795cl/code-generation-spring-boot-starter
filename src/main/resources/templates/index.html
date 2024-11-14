@@ -12,6 +12,9 @@
     <el-container>
         <el-header height="100px">
             <el-menu
+                    :default-active="activeIndex"
+                    border
+                    :resizable="false"
                     class="el-menu-demo"
                     mode="horizontal"
             >
@@ -66,6 +69,7 @@
         el: '#app',
         data() {
             return {
+                activeIndex: '1',
                 headers: [
                     {
                         prop: 'version',

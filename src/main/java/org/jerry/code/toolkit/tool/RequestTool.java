@@ -1,4 +1,4 @@
-package org.jerry.code.tool;
+package org.jerry.code.toolkit.tool;
 
 import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
