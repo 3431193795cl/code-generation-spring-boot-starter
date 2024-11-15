@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <!-- import CSS -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <link rel="stylesheet" href="../static/css/index.css">
+    <link rel="stylesheet" href="../static/css/generate.css">
     <link rel="stylesheet" href="https://unpkg.com/vue-prism-editor/dist/prismeditor.min.css"/>
     <link rel="stylesheet" href="https://unpkg.com/prismjs/themes/prism-tomorrow.css"/>
     <link rel="stylesheet" href="../static/css/contextMenu.min.css"/>
@@ -115,7 +115,7 @@
         methods: {
             highlighter(code) {
                 // js highlight example
-                return Prism.highlight(code, Prism.languages.js, "sql");
+                return Prism.highlight(code, Prism.languages.js);
             },
             rightClick(e, data, node) {
                 console.log(e, data, node)

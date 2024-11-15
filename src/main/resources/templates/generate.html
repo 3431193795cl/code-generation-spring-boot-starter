@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <!-- import CSS -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <!--    <link rel="stylesheet" href="/css/index.css">-->
-    <link rel="stylesheet" href="../static/css/index.css">
+    <!--    <link rel="stylesheet" href="/css/generate.css">-->
+    <link rel="stylesheet" href="../static/css/generate.css">
+    <link rel="stylesheet" href="https://unpkg.com/vue-prism-editor/dist/prismeditor.min.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/prismjs/themes/prism-tomorrow.css"/>
     <title>生成器</title>
 </head>
 <body>
@@ -26,8 +28,10 @@
 
                 <!-- 其他菜单项 -->
                 <el-menu-item index="1"><a href="/code/index.html" style="text-decoration:none;">首页</a></el-menu-item>
-                <el-menu-item index="2"><a href="/code/data_source.html" style="text-decoration:none;">数据源</a></el-menu-item>
-                <el-menu-item index="3"><a href="/code/generate.html" style="text-decoration:none;">生成器</a></el-menu-item>
+                <el-menu-item index="2"><a href="/code/data_source.html" style="text-decoration:none;">数据源</a>
+                </el-menu-item>
+                <el-menu-item index="3"><a href="/code/generate.html" style="text-decoration:none;">生成器</a>
+                </el-menu-item>
                 <el-menu-item index="4">联系我们</el-menu-item>
             </el-menu>
 
@@ -72,12 +76,15 @@
                                             <template slot="title">
                                                 <div class="form-title">
                                                     <el-row>
-                                                        <el-col :span="12"  class="form-buttons">
-                                                            <el-input v-model="item.columnName" placeholder="字段名"></el-input>
+                                                        <el-col :span="12" class="form-buttons">
+                                                            <el-input v-model="item.columnName"
+                                                                      placeholder="字段名"></el-input>
                                                         </el-col>
-                                                        <el-col :span="12"  class="form-buttons">
-                                                            <el-button type="text">保存</el-button>
-                                                            <el-button type="text" style="color: #ff0000" @click="delField(item)">删除</el-button>
+                                                        <el-col :span="12">
+                                                            <el-button class="form-btn" type="text">保存</el-button>
+                                                            <el-button class="form-btn" type="text" style="color: #ff0000"
+                                                                       @click="delField(item)">删除
+                                                            </el-button>
                                                         </el-col>
                                                     </el-row>
                                                 </div>
@@ -86,24 +93,28 @@
                                                 <el-row :gutter="24">
                                                     <el-col :span="8" class="form-item">
                                                         <el-form-item label="字段类型" class="form-label">
-                                                            <el-input v-model="item.fieldType" placeholder="如：varchar(225)"></el-input>
+                                                            <el-input v-model="item.fieldType"
+                                                                      placeholder="如：varchar(225)"></el-input>
                                                         </el-form-item>
                                                     </el-col>
                                                     <el-col :span="8" class="form-item">
                                                         <el-form-item label="默认值" class="form-label">
-                                                            <el-input v-model="item.fieldDefault" placeholder="如：varchar(225)"></el-input>
+                                                            <el-input v-model="item.fieldDefault"
+                                                                      placeholder="如：varchar(225)"></el-input>
                                                         </el-form-item>
                                                     </el-col>
                                                     <el-col :span="8" class="form-item">
                                                         <el-form-item label="注释" class="form-label">
-                                                            <el-input v-model="item.fieldAnnotate" placeholder="如：varchar(225)"></el-input>
+                                                            <el-input v-model="item.fieldAnnotate"
+                                                                      placeholder="如：varchar(225)"></el-input>
                                                         </el-form-item>
                                                     </el-col>
                                                 </el-row>
                                                 <el-row :gutter="20">
                                                     <el-col :span="8" class="form-item">
                                                         <el-form-item label="onUpdate" class="form-label">
-                                                            <el-input v-model="item.fieldOnUpdate" placeholder="如：varchar(225)"></el-input>
+                                                            <el-input v-model="item.fieldOnUpdate"
+                                                                      placeholder="如：varchar(225)"></el-input>
                                                         </el-form-item>
                                                     </el-col>
                                                     <el-col :span="16" class="form-item" style="margin-top: 38px">
@@ -127,7 +138,8 @@
                                                 <el-row :gutter="24">
                                                     <el-col :span="12" class="form-item">
                                                         <el-form-item label="模拟类型" class="form-label">
-                                                            <el-select v-model="item.simulationType" placeholder="请选择" class="form-select">
+                                                            <el-select v-model="item.simulationType"
+                                                                       placeholder="请选择" class="form-select">
                                                                 <el-option
                                                                         v-for="item in simulationType_list"
                                                                         :key="item.value"
@@ -137,12 +149,17 @@
                                                             </el-select>
                                                         </el-form-item>
                                                     </el-col>
-                                                    <el-col :span="12" class="form-item" v-if="item.simulationType != 10005">
-                                                        <el-form-item label="固定值" class="form-label" v-if="item.simulationType == 10001">
-                                                            <el-input v-model="item.simulationValue" placeholder="如：1，2，3，4"></el-input>
+                                                    <el-col :span="12" class="form-item"
+                                                            v-if="item.simulationType != 10005">
+                                                        <el-form-item label="固定值" class="form-label"
+                                                                      v-if="item.simulationType == 10001">
+                                                            <el-input v-model="item.simulationValue"
+                                                                      placeholder="如：1，2，3，4"></el-input>
                                                         </el-form-item>
-                                                        <el-form-item label="随机值" class="form-label" v-if="item.simulationType == 10002">
-                                                            <el-select v-model="item.simulationValue" placeholder="请选择" class="form-select">
+                                                        <el-form-item label="随机值" class="form-label"
+                                                                      v-if="item.simulationType == 10002">
+                                                            <el-select v-model="item.simulationValue"
+                                                                       placeholder="请选择" class="form-select">
                                                                 <el-option
                                                                         v-for="item in random_list"
                                                                         :key="item.value"
@@ -151,11 +168,17 @@
                                                                 </el-option>
                                                             </el-select>
                                                         </el-form-item>
-                                                        <el-form-item label="递增值" class="form-label" v-if="item.simulationType == 10003">
-                                                            <el-input-number v-model="item.simulationValue" controls-position="right" step="1" :min="1" :max="10" class="form-input-number"></el-input-number>
+                                                        <el-form-item label="递增值" class="form-label"
+                                                                      v-if="item.simulationType == 10003">
+                                                            <el-input-number v-model="item.simulationValue"
+                                                                             controls-position="right" step="1" :min="1"
+                                                                             :max="10"
+                                                                             class="form-input-number"></el-input-number>
                                                         </el-form-item>
-                                                        <el-form-item label="规则" class="form-label" v-if="item.simulationType == 10004">
-                                                            <el-input v-model="item.simulationValue" placeholder="如：正则表达式"></el-input>
+                                                        <el-form-item label="规则" class="form-label"
+                                                                      v-if="item.simulationType == 10004">
+                                                            <el-input v-model="item.simulationValue"
+                                                                      placeholder="如：正则表达式"></el-input>
                                                         </el-form-item>
                                                     </el-col>
                                                 </el-row>
@@ -168,7 +191,9 @@
                                     </el-button>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button class="add_btn" plain icon="el-icon-plus" @click="importField">导入建表SQL</el-button>
+                                    <el-button class="add_btn" plain icon="el-icon-plus" @click="importField">
+                                        导入建表SQL
+                                    </el-button>
                                 </el-form-item>
                                 <el-form-item>
                                     <el-button class="add_btn" plain icon="el-icon-plus" @click="addUniversalField">
@@ -203,7 +228,11 @@
                                                     </el-button>
                                                 </el-col>
                                             </template>
-                                            <div v-html="result_ddl" id="result_ddl"></div>
+                                            <div id="result_ddl">
+                                                <prism-editor class="my-editor height-200" v-model="result_ddl"
+                                                              :highlight="highlighter"
+                                                              readonly></prism-editor>
+                                            </div>
                                         </el-collapse-item>
                                         <el-collapse-item name="2">
                                             <template slot="title">
@@ -216,7 +245,11 @@
                                                     </el-button>
                                                 </el-col>
                                             </template>
-                                            <div v-html="result_dml" id="result_dml"></div>
+                                            <div id="result_dml">
+                                                <prism-editor class="my-editor height-200" v-model="result_dml"
+                                                              :highlight="highlighter"
+                                                              readonly></prism-editor>
+                                            </div>
                                         </el-collapse-item>
                                     </el-collapse>
                                 </div>
@@ -248,8 +281,11 @@
                                         <el-button class="btn" size="mini" @click="copyHtml"
                                                    data-clipboard-target="#result_json">复制
                                         </el-button>
-                                        <pre v-html="result_json" id="result_json">
-                                        </pre>
+                                        <br/>
+                                        <div id="result_json">
+                                            <prism-editor class="my-editor height-200" v-model="result_json"
+                                                          :highlight="highlighter"  readonly></prism-editor>
+                                        </div>
                                     </div>
                                 </div>
                             </el-card>
@@ -291,8 +327,12 @@
 <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
 <!-- import JavaScript -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>-->
+<script src="https://unpkg.com/vue-prism-editor"></script>
+<!-- custom highlighter: -->
+<script src="https://unpkg.com/prismjs/prism.js"></script>
 <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/clipboard.js/2.0.10/clipboard.min.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>-->
 <script src="../static/js/import-field.js"></script>
 <script>
     new Vue({
@@ -462,6 +502,10 @@
                 // 阻止粘贴和剪切事件
                 e.preventDefault();
             },
+            highlighter(code) {
+                // js highlight example
+                return Prism.highlight(code, Prism.languages.js, "sql");
+            },
             //添加字段
             addField() {
                 this.form.dynamicItem.push({
@@ -478,7 +522,7 @@
                 })
             },
             //导入字段
-            importField(){
+            importField() {
                 this.$refs.import_field.dialogFormVisible = true
             },
             //复制html
@@ -527,7 +571,7 @@
                 }).then(response => response.json())
                     .then(data => {
                         console.log(data)
-                        this.result_ddl = marked.parse(data.data.ddl)
+                        this.result_ddl = data.data.ddl
                     })
                     .catch((error) => {
                         console.error('Error:', error);
@@ -542,7 +586,7 @@
                     body: JSON.stringify(this.form)
                 }).then(response => response.json())
                     .then(data => {
-                        this.result_dml = marked.parse(data.data.dml)
+                        this.result_dml = data.data.dml
                         this.result_table_data = data.data.dmlList
                         this.result_head_data = data.data.headDmlList
                         this.result_json = JSON.stringify(JSON.parse(data.data.dmlJson), null, '\t')
@@ -551,7 +595,7 @@
                         console.error('Error:', error);
                     })
             },
-            generateJava(){
+            generateJava() {
                 fetch("/table/generateJava", {
                     method: 'POST', // 或者 'PUT'，取决于你的 API 要求
                     headers: {
@@ -566,7 +610,7 @@
                         console.error('Error:', error);
                     })
             },
-            parsingSql(sql){
+            parsingSql(sql) {
                 console.log(sql)
                 fetch("/table/parsingSql", {
                     method: 'POST', // 或者 'PUT'，取决于你的 API 要求

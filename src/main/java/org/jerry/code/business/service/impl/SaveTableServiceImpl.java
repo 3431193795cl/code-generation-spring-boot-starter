@@ -55,7 +55,7 @@ public class SaveTableServiceImpl implements ISaveTableService {
     public DMLVo generateDML(GenerateDTO generateDTO) {
         JSONArray jsonArray = new JSONArray();
         JSONArray headList = new JSONArray();
-        StringBuffer dml = new StringBuffer("```sql\n");
+        StringBuffer dml = new StringBuffer("");
         for (int j = 0; j < generateDTO.getDynamicItem().size(); j++) {
             DynamicItemDTO itemDTO = generateDTO.getDynamicItem().get(j);
             JSONObject head = new JSONObject();
@@ -77,7 +77,7 @@ public class SaveTableServiceImpl implements ISaveTableService {
 
                 dml.append(itemDTO.getColumnName());
                 // 如果不是最后一个列，则添加逗号分隔
-                if (j < generateDTO.getDynamicItem().size() - 1) {
+                if (j == generateDTO.getDynamicItem().size() - 1) {
                     dml.append(",");
                 }
             }
@@ -138,7 +138,7 @@ public class SaveTableServiceImpl implements ISaveTableService {
                         dml.append("'" + randomed + "'");
                 }
                 // 如果不是最后一个列，则添加逗号分隔
-                if (y < generateDTO.getDynamicItem().size() - 1) {
+                if (y == generateDTO.getDynamicItem().size() - 1) {
                     dml.append(",");
                 } else {
                     dml.append(");\n");
@@ -146,7 +146,6 @@ public class SaveTableServiceImpl implements ISaveTableService {
             }
             jsonArray.add(jsonObject);
         }
-        dml.append("```");
         DMLVo dmlVo = new DMLVo();
         dmlVo.setDml(dml.toString());
         dmlVo.setDmlList(jsonArray);
@@ -158,7 +157,7 @@ public class SaveTableServiceImpl implements ISaveTableService {
 
     @Override
     public String generateDDL(GenerateDTO generateDTO) {
-        StringBuffer ddl = new StringBuffer("```sql\n");
+        StringBuffer ddl = new StringBuffer("");
         ddl.append("--" + generateDTO.getTableComment() + "\n");
         // 开始拼接创建表语句，包括表名
         ddl.append("CREATE TABLE IF NOT EXISTS " + generateDTO.getTableName() + " (\n");
@@ -199,7 +198,7 @@ public class SaveTableServiceImpl implements ISaveTableService {
             // 每个列定义后换行
             ddl.append("\n");
         }
-        ddl.append(") COMMENT '" + generateDTO.getTableComment() + "' charset = utf8;\n```");
+        ddl.append(") COMMENT '" + generateDTO.getTableComment() + "' charset = utf8;");
         // 完成表定义，添加字
         return ddl.toString();
     }

@@ -59,7 +59,12 @@ body {
     font-weight: bold;
 }
 .form-buttons {
-    margin-top: 8px;
+    margin-top: 10px;
+}
+.form-btn{
+    float: right;
+    margin-top: 12px;
+    margin-left: 50px;
 }
 .form-buttons .el-button {
     float: right;
@@ -95,6 +100,33 @@ pre {
 }
 code {
     font-family: monospace;
+}
+
+.btn{
+    float: right;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.height-200{
+    height: 200px
+}
+
+.my-editor {
+    /* we dont use `language-` classes anymore so thats why we need to add background and text color manually */
+    background: #2d2d2d;
+    color: #ccc;
+
+    /* you must provide font-family font-size line-height. Example:*/
+    font-family: Fira code, Fira Mono, Consolas, Menlo, Courier, monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 5px;
+}
+
+/* optional class for removing the outline */
+.prism-editor__textarea:focus {
+    outline: none;
 }
 
 /*底部样式 start*/
