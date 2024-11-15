@@ -65,7 +65,7 @@
                                 </el-col>
                             </el-row>
                             <br/>
-                            <prism-editor class="my-editor" v-model="code" :highlight="highlighter" line-numbers></prism-editor>
+                            <prism-editor class="my-editor height-200" v-model="code" :highlight="highlighter" line-numbers></prism-editor>
                         </el-card>
                     </div>
                     <div class="container">
@@ -161,6 +161,10 @@
 <style>
     body {
         font-family: Arial, sans-serif;
+    }
+
+    .height-200{
+        height: 200px
     }
 
     .logo {
