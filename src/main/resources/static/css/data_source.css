@@ -1,115 +1,68 @@
-/*头部样式 start*/
 body {
     font-family: Arial, sans-serif;
 }
+
+.height-200{
+    height: 200px
+}
+
 .logo {
     height: 50px;
     vertical-align: middle;
 }
+
 .el-menu-demo {
     background-color: #f5f5f5;
     border-bottom: none;
 }
-.el-menu-item {
-    margin-right: 20px;
-}
+
 .el-menu-item a {
     text-decoration: none;
     color: #333;
 }
+
 .el-menu-item:hover {
     background-color: #e6f7ff;
 }
+
 .el-table {
     width: 100%;
     border: 1px solid #ddd;
     border-collapse: collapse;
 }
+
 .el-table th, .el-table td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
 }
+
 .el-table th {
     background-color: #f2f2f2;
 }
+
 .el-footer {
     text-align: center;
     padding: 20px;
     background-color: #f9f9f9;
     border-top: 1px solid #ddd;
 }
+
 .el-footer p {
     margin: 0;
     line-height: 1.6;
 }
-/*主题样式*/
-.form-container {
-    margin: 20px;
-}
-.form-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-.form-item {
-    margin-bottom: 15px;
-}
-.form-label {
-    font-weight: bold;
-}
-.form-buttons {
-    margin-top: 10px;
-}
-.form-btn{
-    float: right;
-    margin-top: 12px;
-    margin-left: 50px;
-}
-.form-buttons .el-button {
-    float: right;
-    margin-right: 30px;
-}
-.form-checkbox {
-    margin-right: 20px;
-}
-.form-select {
-    width: 100%;
-}
-.form-input-number {
-    width: 100%;
-}
-.select {
-    margin-left: 60%;
+
+.container {
+    padding: 20px;
 }
 
-.add_btn {
-    width: 100%;
-    min-height: 28px;
+.el-row {
+    margin-bottom: 20px; /* 增加行与编辑器之间的距离 */
 }
 
-.return_results {
-    background-color: #000;
-    color: #2090c6
-}
-
-pre {
-    background-color: #f4f4f4;
-    padding: 10px;
-    border-radius: 5px;
-}
-code {
-    font-family: monospace;
-}
-
-.btn{
-    float: right;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-.height-200{
-    height: 200px
+.el-button {
+    margin-left: 10px; /* 增加按钮之间的间距 */
 }
 
 .my-editor {
@@ -129,17 +82,18 @@ code {
     outline: none;
 }
 
-/*底部样式 start*/
-p {
-    text-align: center;
-    color: #777777;
-    font-size: 12px
+.height-200 {
+    height: 200px; /* 设置编辑器高度 */
 }
 
-p a {
-    text-decoration: none;
-    color: #777777
+.tree_rightmenu {
+    position: fixed;
+    width: 120px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    z-index: 1000;
 }
+
 .el-footer {
     text-align: center;
     padding: 20px;
@@ -152,4 +106,15 @@ p a {
 }
 .el-table .cell {
     white-space: pre-line;
+}
+
+p {
+    text-align: center;
+    color: #777777;
+    font-size: 12px
+}
+
+p a {
+    text-decoration: none;
+    color: #777777
 }

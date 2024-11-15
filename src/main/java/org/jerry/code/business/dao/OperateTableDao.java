@@ -27,4 +27,13 @@ public class OperateTableDao {
         jsonArray.add(jsonObject);
         return jsonArray;
     }
+
+    public String selectTableDDL(String tableName) {
+        return "";
+    }
+
+    public Boolean deleteTable(String tableName) {
+        int updated = jdbcTemplate.update("drop table " + tableName);
+        return updated == 0;
+    }
 }

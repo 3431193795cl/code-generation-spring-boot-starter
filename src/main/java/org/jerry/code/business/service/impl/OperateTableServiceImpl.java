@@ -20,4 +20,14 @@ public class OperateTableServiceImpl implements IOperateTableService {
     public JSONArray getTables() {
         return operateTableDao.selectTables();
     }
+
+    @Override
+    public String getTableDDL(String tableName) {
+        return operateTableDao.selectTableDDL(tableName);
+    }
+
+    @Override
+    public Boolean deleteTable(String tableName) {
+        return operateTableDao.deleteTable(tableName);
+    }
 }

@@ -6,4 +6,8 @@ import com.alibaba.fastjson2.JSONObject;
 public interface IOperateTableService {
 
     public JSONArray getTables();
+
+    String getTableDDL(String tableName);
+
+    Boolean deleteTable(String tableName);
 }

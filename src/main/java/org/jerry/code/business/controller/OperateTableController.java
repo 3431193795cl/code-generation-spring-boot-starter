@@ -3,10 +3,7 @@ package org.jerry.code.business.controller;
 import lombok.RequiredArgsConstructor;
 import org.jerry.code.api.Result;
 import org.jerry.code.business.service.IOperateTableService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,5 +15,16 @@ public class OperateTableController {
     @PostMapping("/tables")
     public Result<?> tables(){
         return Result.ok(operateTableService.getTables());
+    }
+
+    @PostMapping("/tableDDL")
+    public Result<?> tableDDL(String tableName){
+        return Result.ok(operateTableService.getTableDDL(tableName));
+    }
+
+
+    @DeleteMapping("/removeTable/{tableName}")
+    public Result<?> removeTable(@PathVariable String tableName){
+        return Result.ok(operateTableService.deleteTable(tableName));
     }
 }
