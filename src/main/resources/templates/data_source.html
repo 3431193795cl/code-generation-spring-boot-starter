@@ -47,7 +47,7 @@
                                     @node-contextmenu="rightClick"
                                     @node-click="treeNodeClick">
                             </el-tree>
-                            <context-menu ref="contextMenu" @del-table="getTable"></context-menu>
+                            <context-menu ref="contextMenu" @del-table="getTable" @get-ddl="setDdl" @get-sql="runSql"></context-menu>
                         </el-card>
                     </div>
                 </el-col>
@@ -178,6 +178,26 @@
                         console.error('Error:', error);
                     })
             },
+            setDdl(ddl){
+                this.code = ddl
+            },
+            runSql(sql){
+                this.code = sql
+                // fetch("/operate/run_sql", {
+                //     method: 'POST', // 或者 'PUT'，取决于你的 API 要求
+                //     headers: {
+                //         'Content-Type': 'application/json'
+                //     },
+                //     body: JSON.stringify({
+                //         sql: sql
+                //     })
+                // }).then(response => response.json())
+                //     .then(data => {
+                //         console.log(data)
+                //         this.data = data.data
+                //     })
+                //     .catch((error) =>{})
+            }
         }
     });
 </script>

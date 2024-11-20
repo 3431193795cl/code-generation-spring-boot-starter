@@ -14,7 +14,7 @@ Vue.component('context-menu', {
         return {
             menuShow: false,
             table_name: '',
-            options:[]
+            options: [],
         }
     },
     methods: {
@@ -25,10 +25,10 @@ Vue.component('context-menu', {
                     this.getTableDDL(this.table_name)
                     break;
                 case '2':
-
+                    this.getTableContent(this.table_name)
                     break;
                 case '3':
-                    self.location="/code/generate.html";
+                    self.location = "/code/generate.html";
                     break;
                 case '4':
                     this.$confirm('此操作将永久删除该数据表, 是否继续?', '提示', {
@@ -49,19 +49,25 @@ Vue.component('context-menu', {
 
         },
         getTableDDL(tableName) {
+            let that = this
             fetch("/operate/tableDDL", {
                 method: 'POST', // 或者 'PUT'，取决于你的 API 要求
                 headers: {
-                    'Content-Type': 'application/json'
-                }
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: `tableName=${tableName.label}`
             }).then(response => response.json())
                 .then(data => {
                     console.log(data)
-                    this.data = data.data
+                    that.$emit('get-ddl',data.data)
                 })
                 .catch((error) => {
                     console.error('Error:', error);
                 })
+        },
+        getTableContent(tableName){
+            let code = `SELECT * FROM ${tableName.label} LIMIT 100`
+            this.$emit('get-sql',code)
         },
         removeTable(tableName) {
             let that = this

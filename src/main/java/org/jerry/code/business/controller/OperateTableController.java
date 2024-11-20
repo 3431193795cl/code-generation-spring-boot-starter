@@ -18,8 +18,11 @@ public class OperateTableController {
     }
 
     @PostMapping("/tableDDL")
-    public Result<?> tableDDL(String tableName){
-        return Result.ok(operateTableService.getTableDDL(tableName));
+    public Result<?> tableDDL(@RequestParam("tableName") String tableName){
+        Result<Object> r = Result.ok();
+        String tableDDL = operateTableService.getTableDDL(tableName);
+        r.setData(tableDDL);
+        return r;
     }
 
 

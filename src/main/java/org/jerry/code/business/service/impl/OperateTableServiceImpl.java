@@ -23,7 +23,9 @@ public class OperateTableServiceImpl implements IOperateTableService {
 
     @Override
     public String getTableDDL(String tableName) {
-        return operateTableDao.selectTableDDL(tableName);
+        String ddl = operateTableDao.selectTableDDL(tableName);
+        log.info("ddl:{}", ddl);
+        return ddl;
     }
 
     @Override
