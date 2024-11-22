@@ -47,7 +47,8 @@
                                     @node-contextmenu="rightClick"
                                     @node-click="treeNodeClick">
                             </el-tree>
-                            <context-menu ref="contextMenu" @del-table="getTable" @get-ddl="setDdl" @get-sql="runSql"></context-menu>
+                            <context-menu ref="contextMenu" @del-table="getTable" @get-ddl="setDdl"
+                                          @get-sql="runSql"></context-menu>
                         </el-card>
                     </div>
                 </el-col>
@@ -56,11 +57,13 @@
                         <el-card>
                             <el-row :gutter="20">
                                 <el-col :span="3">
-                                    <el-button size="small" type="primary" icon="el-icon-refresh">清空（Clear）
+                                    <el-button size="small" type="primary" icon="el-icon-refresh" @click="clearSql">
+                                        清空（Clear）
                                     </el-button>
                                 </el-col>
                                 <el-col :span="3">
-                                    <el-button size="small" type="primary" icon="el-icon-video-play">运行（Run）
+                                    <el-button size="small" type="primary" icon="el-icon-video-play" @click="runSql">
+                                        运行（Run）
                                     </el-button>
                                 </el-col>
                             </el-row>
@@ -71,7 +74,18 @@
                     </div>
                     <div class="container">
                         <el-card>
-                            <el-empty description="结果为空"></el-empty>
+                            <div v-if="headers">
+                                <el-table
+                                        :data="tableData"
+                                        style="width: 100%"
+                                >
+                                    <el-table-column v-for="(item,key) in headers" :key="key"
+                                                     :prop="item.prop"
+                                                     :label="item.label"></el-table-column>
+
+                                </el-table>
+                            </div>
+                            <el-empty v-else description="结果为空"></el-empty>
                         </el-card>
                     </div>
                 </el-col>
@@ -108,7 +122,10 @@
                 defaultProps: {
                     children: 'children',
                     label: 'label'
-                }
+                },
+                headers: [],
+                tableData: [],
+                result_str: null,
             }
         },
         mounted() {
@@ -178,25 +195,55 @@
                         console.error('Error:', error);
                     })
             },
-            setDdl(ddl){
+            setDdl(ddl) {
                 this.code = ddl
             },
-            runSql(sql){
-                this.code = sql
-                // fetch("/operate/run_sql", {
-                //     method: 'POST', // 或者 'PUT'，取决于你的 API 要求
-                //     headers: {
-                //         'Content-Type': 'application/json'
-                //     },
-                //     body: JSON.stringify({
-                //         sql: sql
-                //     })
-                // }).then(response => response.json())
-                //     .then(data => {
-                //         console.log(data)
-                //         this.data = data.data
-                //     })
-                //     .catch((error) =>{})
+            clearSql() {
+                this.code = null
+            },
+            runSql(sql) {
+                this.headers = []
+                this.tableData = []
+                this.result_str = null
+                if (typeof (sql) == "string") {
+                    this.code = sql
+                }
+                fetch("/operate/run_sql", {
+                    method: 'POST', // 或者 'PUT'，取决于你的 API 要求
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                    },
+                    body: `sql=${this.code}`
+                }).then(response => response.json())
+                    .then(data => {
+                        if (data.data.columnNames) {
+                            this.headers = data.data.columnNames
+                            this.tableData = data.data.data
+                        } else {
+                            console.log(data.data > 0)
+                            if (data.data > 0) {
+                                this.$message({
+                                    message: "成功操作数据表中"+data.data+"条数据！",
+                                    type: 'success'
+                                });
+                            } else if (data.data == 0) {
+                                this.$message({
+                                    message: '没有数据被操作',
+                                    type: 'success'
+                                });
+                                this.result_str = '！'
+                            } else {
+                                this.$message({
+                                    message: '数据操作错误！',
+                                    type: 'success'
+                                });
+                            }
+                            console.log(this.result_str)
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    })
             }
         }
     });

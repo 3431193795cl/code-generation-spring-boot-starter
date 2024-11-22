@@ -18,7 +18,6 @@
                     :default-active="activeIndex"
                     class="el-menu-demo"
                     mode="horizontal"
-                    @select="handleSelect"
             >
                 <!-- Logo 图片 -->
                 <el-menu-item index="logo">
@@ -82,7 +81,8 @@
                                                         </el-col>
                                                         <el-col :span="12">
                                                             <el-button class="form-btn" type="text">保存</el-button>
-                                                            <el-button class="form-btn" type="text" style="color: #ff0000"
+                                                            <el-button class="form-btn" type="text"
+                                                                       style="color: #ff0000"
                                                                        @click="delField(item)">删除
                                                             </el-button>
                                                         </el-col>
@@ -284,27 +284,273 @@
                                         <br/>
                                         <div id="result_json">
                                             <prism-editor class="my-editor height-200" v-model="result_json"
-                                                          :highlight="highlighter"  readonly></prism-editor>
+                                                          :highlight="highlighter" readonly></prism-editor>
                                         </div>
                                     </div>
                                 </div>
                             </el-card>
                         </el-tab-pane>
                         <el-tab-pane label="Java代码">
-                            <el-card class="box-card">
+                            <el-card>
                                 <div>
-                                    <el-empty v-if="!result_ddl" description="结果为空"></el-empty>
-                                    <div v-else>
-                                        <el-collapse>
-                                            <el-collapse-item title="生成设置" name="1">
-                                                <div>
-                                                    与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；
+                                    <!--                                    <el-empty v-if="!result_ddl" description="结果为空"></el-empty>-->
+                                    <div>
+                                        <el-form ref="form" :model="generateSettingsForm" label-width="80px">
+                                            <el-card-collapse ref="sqlCardCollapse" class="box-card"
+                                                              :is-collapse="isCollapse">
+                                                <div slot="header" class="flex-between">
+                                                    <span>输入SQL</span>
+                                                    <el-button style="float: right; padding: 0px 0"
+                                                               :icon="isSqlExpanded?'el-icon-minus':'el-icon-plus'"
+                                                               circle
+                                                               @click="sqlToggleExpand"></el-button>
                                                 </div>
-                                                <div>
-                                                    在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。
+                                                <div v-show="isSqlExpanded" class="content">
+                                                    <prism-editor line-numbers class="my-editor height-200"
+                                                                  v-model="generateSettingsForm.inputSql"
+                                                                  :highlight="highlighter"></prism-editor>
                                                 </div>
-                                            </el-collapse-item>
-                                        </el-collapse>
+                                            </el-card-collapse>
+                                            <br/>
+                                            <el-card-collapse ref="settingCardCollapse" class="box-card"
+                                                              :is-collapse="isCollapse">
+                                                <div slot="header" class="flex-between">
+                                                    <span>生成设置</span>
+                                                    <el-button style="float: right; padding: 0px 0"
+                                                               :icon="isSettingExpanded?'el-icon-minus':'el-icon-plus'"
+                                                               circle
+                                                               @click="settingToggleExpand"></el-button>
+                                                </div>
+                                                <div v-show="isSettingExpanded" class="content">
+                                                    <el-row :gutter="20">
+                                                        <el-col :span="8">
+                                                            <el-form-item label="作者">
+                                                                <el-input
+                                                                        v-model="generateSettingsForm.author"></el-input>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="包名">
+                                                                <el-input
+                                                                        v-model="generateSettingsForm.packageName"></el-input>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="返回（成功）">
+                                                                <el-input
+                                                                        v-model="generateSettingsForm.returnSuccess"></el-input>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                    </el-row>
+                                                    <el-row :gutter="20">
+                                                        <el-col :span="8">
+                                                            <el-form-item label="返回（失败）">
+                                                                <el-input
+                                                                        v-model="generateSettingsForm.returnError"></el-input>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="忽略前缀">
+                                                                <el-input
+                                                                        v-model="generateSettingsForm.ignorePrefix"></el-input>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="输入类型">
+                                                                <el-input
+                                                                        v-model="generateSettingsForm.inputType"></el-input>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                    </el-row>
+                                                    <el-row :gutter="20">
+                                                        <el-col :span="8">
+                                                            <el-form-item label="TinyInt转换">
+                                                                <el-input
+                                                                        v-model="generateSettingsForm.tinyIntChange"></el-input>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="时间类型">
+                                                                <el-input
+                                                                        v-model="generateSettingsForm.dateChange"></el-input>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="命名类型">
+                                                                <el-input
+                                                                        v-model="generateSettingsForm.namedType"></el-input>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                    </el-row>
+                                                    <el-row :gutter="20">
+                                                        <el-col :span="8">
+                                                            <el-form-item label="包装类型">
+                                                                <el-switch
+                                                                        v-model="generateSettingsForm.packagingType"></el-switch>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="swaggerUI">
+                                                                <el-switch
+                                                                        v-model="generateSettingsForm.swaggerUI"></el-switch>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="字段注释">
+                                                                <el-switch
+                                                                        v-model="generateSettingsForm.fieldComment"></el-switch>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                    </el-row>
+                                                    <el-row :gutter="20">
+                                                        <el-col :span="8">
+                                                            <el-form-item label="自动引包">
+                                                                <el-switch
+                                                                        v-model="generateSettingsForm.automaticPackage"></el-switch>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="带包路径">
+                                                                <el-switch
+                                                                        v-model="generateSettingsForm.packedPath"></el-switch>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="Lombok">
+                                                                <el-switch
+                                                                        v-model="generateSettingsForm.lombok"></el-switch>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                    </el-row>
+                                                </div>
+                                            </el-card-collapse>
+                                            <br/>
+                                            <el-card-collapse ref="moduleCardCollapse" class="box-card"
+                                                              :is-collapse="isCollapse">
+                                                <div slot="header" class="flex-between">
+                                                    <span>模板选择</span>
+                                                    <el-button style="float: right; padding: 0px 0"
+                                                               :icon="isModuleExpanded?'el-icon-minus':'el-icon-plus'"
+                                                               circle
+                                                               @click="moduleToggleExpand"></el-button>
+                                                </div>
+                                                <div v-show="isModuleExpanded" class="content">
+                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                        <el-radio-button label="ui" disabled ></el-radio-button>
+                                                        <el-radio-button label="swagger-ui"></el-radio-button>
+                                                        <el-radio-button label="element-ui"></el-radio-button>
+                                                        <el-radio-button label="bootstrap-ui"></el-radio-button>
+                                                        <el-radio-button label="layui-edit"></el-radio-button>
+                                                        <el-radio-button label="layui-list"></el-radio-button>
+                                                    </el-radio-group>
+                                                    <br/>
+                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                        <el-radio-button label="mybatis" disabled ></el-radio-button>
+                                                        <el-radio-button label="controller"></el-radio-button>
+                                                        <el-radio-button label="service"></el-radio-button>
+                                                        <el-radio-button label="service_impl"></el-radio-button>
+                                                        <el-radio-button label="mapper"></el-radio-button>
+                                                        <el-radio-button label="mybatis"></el-radio-button>
+                                                        <el-radio-button label="model"></el-radio-button>
+                                                        <el-radio-button label="mapper2"></el-radio-button>
+                                                    </el-radio-group>
+                                                    <br/>
+                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                        <el-radio-button label="jpa" disabled ></el-radio-button>
+                                                        <el-radio-button label="entity"></el-radio-button>
+                                                        <el-radio-button label="repository"></el-radio-button>
+                                                        <el-radio-button label="jpacontroller"></el-radio-button>
+                                                    </el-radio-group>
+                                                    <br/>
+                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                        <el-radio-button label="jdbc-template" disabled ></el-radio-button>
+                                                        <el-radio-button label="jtdao"></el-radio-button>
+                                                        <el-radio-button label="jtdaoimpl"></el-radio-button>
+                                                    </el-radio-group>
+                                                    <br/>
+                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                        <el-radio-button label="beetlsql" disabled ></el-radio-button>
+                                                        <el-radio-button label="beetlmd"></el-radio-button>
+                                                        <el-radio-button label="beetlentity"></el-radio-button>
+                                                        <el-radio-button label="beetlcontroller"></el-radio-button>
+                                                    </el-radio-group>
+                                                    <br/>
+                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                        <el-radio-button label="mybatis-plus" disabled ></el-radio-button>
+                                                        <el-radio-button label="pluscontroller"></el-radio-button>
+                                                        <el-radio-button label="plusservice"></el-radio-button>
+                                                        <el-radio-button label="plusmapper"></el-radio-button>
+                                                        <el-radio-button label="plusentity"></el-radio-button>
+                                                    </el-radio-group>
+                                                    <br/>
+                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                        <el-radio-button label="util" disabled ></el-radio-button>
+                                                        <el-radio-button label="beanutil"></el-radio-button>
+                                                        <el-radio-button label="json"></el-radio-button>
+                                                        <el-radio-button label="xml"></el-radio-button>
+                                                        <el-radio-button label="sql"></el-radio-button>
+                                                        <el-radio-button label="swagger-yml"></el-radio-button>
+                                                    </el-radio-group>
+                                                    <br/>
+                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                        <el-radio-button label="common-mapper" disabled ></el-radio-button>
+                                                        <el-radio-button label="tkentity"></el-radio-button>
+                                                        <el-radio-button label="tkmapper"></el-radio-button>
+                                                    </el-radio-group>
+                                                    <br/>
+                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                        <el-radio-button label="renren-fast" disabled ></el-radio-button>
+                                                        <el-radio-button label="menu-sql"></el-radio-button>
+                                                        <el-radio-button label="vue-list"></el-radio-button>
+                                                        <el-radio-button label="vue-edit"></el-radio-button>
+                                                        <el-radio-button label="rr-controller"></el-radio-button>
+                                                        <el-radio-button label="rr-dao"></el-radio-button>
+                                                        <el-radio-button label="rr-daoxml"></el-radio-button>
+                                                        <el-radio-button label="rr-service"></el-radio-button>
+                                                    </el-radio-group>
+                                                    <br/>
+                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                        <el-radio-button label="jpa-starp" disabled ></el-radio-button>
+                                                        <el-radio-button label="starp-entity"></el-radio-button>
+                                                        <el-radio-button label="starp-repository"></el-radio-button>
+                                                        <el-radio-button label="starp-jpa-controller"></el-radio-button>
+                                                    </el-radio-group>
+                                                    <br/>
+                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                        <el-radio-button label="bi" disabled ></el-radio-button>
+                                                        <el-radio-button label="qliksense"></el-radio-button>
+                                                    </el-radio-group>
+                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                        <el-radio-button label="cloud" disabled ></el-radio-button>
+                                                        <el-radio-button label="bigquery"></el-radio-button>
+                                                        <el-radio-button label="dataflowjjs"></el-radio-button>
+                                                    </el-radio-group>
+                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                        <el-radio-button label="tk-mybatis" disabled ></el-radio-button>
+                                                        <el-radio-button label="tk-entity"></el-radio-button>
+                                                        <el-radio-button label="tk-mapper"></el-radio-button>
+                                                        <el-radio-button label="tk-controller"></el-radio-button>
+                                                    </el-radio-group>
+                                                </div>
+                                            </el-card-collapse>
+                                            <br/>
+                                            <el-card-collapse ref="outputCardCollapse" class="box-card"
+                                                              :is-collapse="isCollapse">
+                                                <div slot="header" class="flex-between">
+                                                    <span>输出代码</span>
+                                                    <el-button style="float: right; padding: 0px 0"
+                                                               :icon="isOutputExpanded?'el-icon-minus':'el-icon-plus'"
+                                                               circle
+                                                               @click="outputToggleExpand"></el-button>
+                                                </div>
+                                                <div v-show="isOutputExpanded" class="content">
+                                                    <prism-editor line-numbers class="my-editor height-200"
+                                                                  v-model="outputContent"
+                                                                  :highlight="highlighter" readonly></prism-editor>
+                                                </div>
+                                            </el-card-collapse>
+                                            <br/>
+                                        </el-form>
                                     </div>
                                 </div>
                             </el-card>
@@ -334,7 +580,48 @@
 <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/clipboard.js/2.0.10/clipboard.min.js"></script>
 <!--<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>-->
 <script src="../static/js/import-field.js"></script>
+
+<script src="https://unpkg.com/http-vue-loader"></script>
 <script>
+    // 注册 Element UI 组件
+    Vue.use(ELEMENT);
+
+    // 引入全局使用的Element UI
+    Vue.component('el-card-collapse', {
+        extends: Vue.component('ElCard'),
+        template: `
+          <div class="el-card" :class="shadow ? 'is-' + shadow + '-shadow' : 'is-always-shadow'">
+            <div
+                v-if="$slots.header || header"
+                class="el-card__header"
+                :class="isCollapseSelf ? 'collapse-icon-right' : 'collapse-icon-down'"
+                @click="isCollapseSelf = !isCollapseSelf"
+            >
+              <slot name="header">{{ header }}</slot>
+            </div>
+            <div
+                class="el-card__body"
+                :style="bodyStyle"
+                :class="{'is-collapse': isCollapseSelf}"
+            >
+              <slot/>
+            </div>
+          </div>`,
+        name: 'ElCardCollapse',
+        props: {
+            isCollapse: {
+                type: Boolean,
+                default: false,
+            },
+        },
+        data() {
+            return {
+                isCollapseSelf: this.isCollapse
+            }
+        },
+
+    });
+
     new Vue({
         el: '#app',
         data() {
@@ -347,6 +634,30 @@
                     analogNumber: 0,
                     dynamicItem: []
                 },
+                generateSettingsForm: {
+                    inputSql: null,
+                    author: "jerryMouse",
+                    packageName: "com.jerrymouse.generator",
+                    returnSuccess: "ReturnT.success",
+                    returnError: "ReturnT.error",
+                    ignorePrefix: "sys_",
+                    inputType: 1,
+                    tinyIntChange: 4,
+                    dateChange: 1,
+                    namedType: 1,
+                    packagingType: true,
+                    swaggerUI: false,
+                    fieldComment: true,
+                    automaticPackage: false,
+                    packedPath: false,
+                    lombok: true
+                },
+                isSqlExpanded: true,
+                isSettingExpanded: true,
+                isModuleExpanded: true,
+                isOutputExpanded: true,
+                outputContent: "com.jerrymouse.generator",
+                isCollapse: true,
                 db_type_value: 1,
                 db_type_list: [
                     {
@@ -506,6 +817,78 @@
                 // js highlight example
                 return Prism.highlight(code, Prism.languages.js, "sql");
             },
+            sqlToggleExpand() {
+                this.isSqlExpanded = !this.isSqlExpanded;
+                this.$nextTick(() => {
+                    const parent = this.$refs.sqlCardCollapse?.$el;
+                    if (parent) {
+                        console.log('Parent element found:', parent); // Debugging line
+                        const child = parent.querySelector('.el-card__body')
+                        console.log(child)
+                        if (child) {
+                            child.style.padding = this.isSqlExpanded ? "20px" : "0px";
+                        } else {
+                            console.error('Child element not found');
+                        }
+                    } else {
+                        console.error('Parent element not found');
+                    }
+                });
+            },
+            settingToggleExpand() {
+                this.isSettingExpanded = !this.isSettingExpanded;
+                this.$nextTick(() => {
+                    const parent = this.$refs.settingCardCollapse?.$el;
+                    if (parent) {
+                        console.log('Parent element found:', parent); // Debugging line
+                        const child = parent.querySelector('.el-card__body')
+                        console.log(child)
+                        if (child) {
+                            child.style.padding = this.isSettingExpanded ? "20px" : "0px";
+                        } else {
+                            console.error('Child element not found');
+                        }
+                    } else {
+                        console.error('Parent element not found');
+                    }
+                });
+            },
+            moduleToggleExpand() {
+                this.isModuleExpanded = !this.isModuleExpanded;
+                this.$nextTick(() => {
+                    const parent = this.$refs.moduleCardCollapse?.$el;
+                    if (parent) {
+                        console.log('Parent element found:', parent); // Debugging line
+                        const child = parent.querySelector('.el-card__body')
+                        console.log(child)
+                        if (child) {
+                            child.style.padding = this.isModuleExpanded ? "20px" : "0px";
+                        } else {
+                            console.error('Child element not found');
+                        }
+                    } else {
+                        console.error('Parent element not found');
+                    }
+                });
+            },
+            outputToggleExpand() {
+                this.isOutputExpanded = !this.isOutputExpanded;
+                this.$nextTick(() => {
+                    const parent = this.$refs.outputCardCollapse?.$el;
+                    if (parent) {
+                        console.log('Parent element found:', parent); // Debugging line
+                        const child = parent.querySelector('.el-card__body')
+                        console.log(child)
+                        if (child) {
+                            child.style.padding = this.isOutputExpanded ? "20px" : "0px";
+                        } else {
+                            console.error('Child element not found');
+                        }
+                    } else {
+                        console.error('Parent element not found');
+                    }
+                });
+            },
             //添加字段
             addField() {
                 this.form.dynamicItem.push({
@@ -572,6 +955,7 @@
                     .then(data => {
                         console.log(data)
                         this.result_ddl = data.data.ddl
+                        this.generateSettingsForm.inputSql = data.data.ddl
                     })
                     .catch((error) => {
                         console.error('Error:', error);
@@ -659,14 +1043,15 @@
                 return data;
             },
             saveTable() {
+                if (!this.return_results && this.form) {
+                    this.generateDDL();
+                }
                 fetch("/table/save", {
-                        method: "POST",
-                        body: JSON.stringify({
-                            tableName: this.return_results
-                        }),
+                        method: 'POST', // 或者 'PUT'，取决于你的 API 要求
                         headers: {
-                            "Content-Type": "application/json"
-                        }
+                            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                        },
+                        body: `tableName=${this.result_ddl}`
                     }
                 ).then(res => {
                     console.log(res)

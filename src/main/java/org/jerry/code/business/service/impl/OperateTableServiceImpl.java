@@ -32,4 +32,10 @@ public class OperateTableServiceImpl implements IOperateTableService {
     public Boolean deleteTable(String tableName) {
         return operateTableDao.deleteTable(tableName);
     }
+
+
+    @Override
+    public Object runSql(String sql) {
+        return operateTableDao.runSql(sql);
+    }
 }

@@ -10,4 +10,6 @@ public interface IOperateTableService {
     String getTableDDL(String tableName);
 
     Boolean deleteTable(String tableName);
+
+    Object runSql(String sql);
 }

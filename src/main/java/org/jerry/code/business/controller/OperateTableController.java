@@ -25,9 +25,13 @@ public class OperateTableController {
         return r;
     }
 
-
     @DeleteMapping("/removeTable/{tableName}")
     public Result<?> removeTable(@PathVariable String tableName){
         return Result.ok(operateTableService.deleteTable(tableName));
+    }
+
+    @PostMapping("/run_sql")
+    public Result<?> run_sql(@RequestParam("sql") String sql){
+        return Result.ok(operateTableService.runSql(sql));
     }
 }

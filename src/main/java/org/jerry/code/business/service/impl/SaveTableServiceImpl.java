@@ -10,6 +10,7 @@ import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
+import org.jerry.code.business.service.IOperateTableService;
 import org.jerry.code.config.CodeGenerationProperties;
 import org.jerry.code.toolkit.constant.SimulationType;
 import org.jerry.code.toolkit.constant.SimulationValue;
@@ -41,14 +42,16 @@ public class SaveTableServiceImpl implements ISaveTableService {
     @Resource
     private JdbcTemplate jdbcTemplate;
 
-    @Resource
-    private CodeGenerationProperties conf;
-
 
     @Override
     public Boolean saveTable(String tableName) {
         log.info(tableName);
-        return null;
+        try {
+            jdbcTemplate.execute(tableName);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
@@ -273,9 +276,6 @@ public class SaveTableServiceImpl implements ISaveTableService {
             dynamicItemDTO.setPrimaryKey(primaryKey);
 
             dynamicItemDTOS.add(dynamicItemDTO);
-            System.out.println("列名:" + columnDefinition.getColumnName() + "  ,列类型:" + columnDefinition.getColDataType().getDataType()
-                    + "  长度:" + length + ", 备注：" + comment + "，默认：" + def + "， 是否为空：" + isNull
-                    + "，更新：" + onUpdate + "，是否自增：" + autoIncrement + "，是否主键：" + primaryKey);
         }
         generateDTO.setDynamicItem(dynamicItemDTOS);
         return generateDTO;

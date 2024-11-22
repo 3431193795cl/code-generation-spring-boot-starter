@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.jerry.code.api.Result;
 import org.jerry.code.business.dto.GenerateDTO;
 import org.jerry.code.business.service.ISaveTableService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,7 +15,7 @@ public class SaveTableController {
     private final ISaveTableService saveTableService;
 
     @PostMapping("/save")
-    public Result<?> saveTable(String tableName) {
+    public Result<?> saveTable(@RequestParam("tableName") String tableName) {
         return Result.ok(saveTableService.saveTable(tableName));
     }
 
