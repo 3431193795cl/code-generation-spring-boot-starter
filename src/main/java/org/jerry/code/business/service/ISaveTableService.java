@@ -1,6 +1,7 @@
 package org.jerry.code.business.service;
 
 import com.alibaba.fastjson2.JSONObject;
+import org.jerry.code.business.dto.GenerateCodeDTO;
 import org.jerry.code.business.dto.GenerateDTO;
 import org.jerry.code.business.vo.DMLVo;
 
@@ -28,4 +29,11 @@ public interface ISaveTableService {
     GenerateDTO parsingSql(String sqlDdl);
 
     JSONObject getPackageInfo();
+
+    /**
+     * 生成代码
+     * @param generateCodeDTO
+     * @return
+     */
+    JSONObject generateCode(GenerateCodeDTO generateCodeDTO);
 }

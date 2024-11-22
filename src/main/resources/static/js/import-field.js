@@ -29,14 +29,12 @@ var demoComponent = Vue.extend({
                 sql: '',
             },
             formLabelWidth: '120px',
-            default_sql: `
-CREATE TABLE sys_user_info (
+            default_sql: `CREATE TABLE sys_user_info (
   user_id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '用户编号',
   user_name varchar(255) NOT NULL COMMENT '用户名',
   status tinyint(1) NOT NULL COMMENT '状态',
   create_time datetime NOT NULL COMMENT '创建时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户信息';
-            `
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户信息';`
         }
     },
     methods: {

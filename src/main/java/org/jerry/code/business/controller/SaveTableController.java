@@ -3,6 +3,7 @@ package org.jerry.code.business.controller;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.RequiredArgsConstructor;
 import org.jerry.code.api.Result;
+import org.jerry.code.business.dto.GenerateCodeDTO;
 import org.jerry.code.business.dto.GenerateDTO;
 import org.jerry.code.business.service.ISaveTableService;
 import org.springframework.web.bind.annotation.*;
@@ -39,5 +40,10 @@ public class SaveTableController {
     @PostMapping("getPackageInfo")
     public Result<?> getPackageInfo() {
         return Result.ok(saveTableService.getPackageInfo());
+    }
+
+    @PostMapping("generateCode")
+    public Result<?> generateCode(@RequestBody GenerateCodeDTO generateCodeDTO) {
+        return Result.ok(saveTableService.generateCode(generateCodeDTO));
     }
 }

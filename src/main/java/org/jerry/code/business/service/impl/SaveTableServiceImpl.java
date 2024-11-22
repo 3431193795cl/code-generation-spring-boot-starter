@@ -10,6 +10,7 @@ import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
+import org.jerry.code.business.dto.GenerateCodeDTO;
 import org.jerry.code.business.service.IOperateTableService;
 import org.jerry.code.config.CodeGenerationProperties;
 import org.jerry.code.toolkit.constant.SimulationType;
@@ -281,30 +282,9 @@ public class SaveTableServiceImpl implements ISaveTableService {
         return generateDTO;
     }
 
-    /**
-     * 检查指定名称的表是否存在
-     *
-     * @param tableName 要检查的表名称
-     * @return 如果表存在返回true，否则返回false
-     */
-    private Boolean isTableExist(String tableName) {
-        // 定义查询语句，用于查询指定名称的表是否存在
-        String sql = "SHOW TABLES LIKE ?";
-        try {
-            // 使用JdbcTemplate执行查询，并通过ResultSetExtractor提取结果
-            return jdbcTemplate.query(sql, new Object[]{tableName}, new ResultSetExtractor<Boolean>() {
-                @Override
-                public Boolean extractData(ResultSet rs) throws SQLException, DataAccessException {
-                    // 如果查询结果集有下一行，说明表存在，返回true，否则返回false
-                    return rs.next();
-                }
-            });
-        } catch (Exception e) {
-            // 记录异常信息
-            System.err.println("Error checking table existence: " + e.getMessage());
-            throw e; // 或者可以根据具体情况进行处理
-        }
+    @Override
+    public JSONObject generateCode(GenerateCodeDTO generateCodeDTO) {
+        log.info("generateCodeDTO:{}", JSON.toJSONString(generateCodeDTO));
+        return null;
     }
-
-
 }

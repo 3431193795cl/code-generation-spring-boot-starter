@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class DDLAnalysisTool implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -8316717059627957860L;
 
     private static final String DDL_FIELD_NOT = "NOT";
 

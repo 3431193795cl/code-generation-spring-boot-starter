@@ -307,8 +307,14 @@
                                                 </div>
                                                 <div v-show="isSqlExpanded" class="content">
                                                     <prism-editor line-numbers class="my-editor height-200"
-                                                                  v-model="generateSettingsForm.inputSql"
+                                                                  v-model="inputSql"
                                                                   :highlight="highlighter"></prism-editor>
+                                                    <div v-if="!result_ddl">
+                                                        <br/>
+                                                        <el-button style="float: right;margin-bottom: 20px"
+                                                                   type="primary" @click="generateCode">生成
+                                                        </el-button>
+                                                    </div>
                                                 </div>
                                             </el-card-collapse>
                                             <br/>
@@ -357,28 +363,56 @@
                                                         </el-col>
                                                         <el-col :span="8">
                                                             <el-form-item label="输入类型">
-                                                                <el-input
-                                                                        v-model="generateSettingsForm.inputType"></el-input>
+                                                                <el-select v-model="generateSettingsForm.inputType"
+                                                                           placeholder="请选择">
+                                                                    <el-option
+                                                                            v-for="item in inputTypeList"
+                                                                            :key="item.value"
+                                                                            :label="item.label"
+                                                                            :value="item.value">
+                                                                    </el-option>
+                                                                </el-select>
                                                             </el-form-item>
                                                         </el-col>
                                                     </el-row>
                                                     <el-row :gutter="20">
                                                         <el-col :span="8">
                                                             <el-form-item label="TinyInt转换">
-                                                                <el-input
-                                                                        v-model="generateSettingsForm.tinyIntChange"></el-input>
+                                                                <el-select v-model="generateSettingsForm.tinyIntChange"
+                                                                           placeholder="请选择">
+                                                                    <el-option
+                                                                            v-for="item in tinyIntChangeList"
+                                                                            :key="item.value"
+                                                                            :label="item.label"
+                                                                            :value="item.value">
+                                                                    </el-option>
+                                                                </el-select>
                                                             </el-form-item>
                                                         </el-col>
                                                         <el-col :span="8">
                                                             <el-form-item label="时间类型">
-                                                                <el-input
-                                                                        v-model="generateSettingsForm.dateChange"></el-input>
+                                                                <el-select v-model="generateSettingsForm.dateChange"
+                                                                           placeholder="请选择">
+                                                                    <el-option
+                                                                            v-for="item in dateChangeList"
+                                                                            :key="item.value"
+                                                                            :label="item.label"
+                                                                            :value="item.value">
+                                                                    </el-option>
+                                                                </el-select>
                                                             </el-form-item>
                                                         </el-col>
                                                         <el-col :span="8">
                                                             <el-form-item label="命名类型">
-                                                                <el-input
-                                                                        v-model="generateSettingsForm.namedType"></el-input>
+                                                                <el-select v-model="generateSettingsForm.nameType"
+                                                                           placeholder="请选择">
+                                                                    <el-option
+                                                                            v-for="item in nameTypeList"
+                                                                            :key="item.value"
+                                                                            :label="item.label"
+                                                                            :value="item.value">
+                                                                    </el-option>
+                                                                </el-select>
                                                             </el-form-item>
                                                         </el-col>
                                                     </el-row>
@@ -436,7 +470,7 @@
                                                 </div>
                                                 <div v-show="isModuleExpanded" class="content">
                                                     <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="ui" disabled ></el-radio-button>
+                                                        <el-radio-button label="ui" disabled></el-radio-button>
                                                         <el-radio-button label="swagger-ui"></el-radio-button>
                                                         <el-radio-button label="element-ui"></el-radio-button>
                                                         <el-radio-button label="bootstrap-ui"></el-radio-button>
@@ -445,7 +479,7 @@
                                                     </el-radio-group>
                                                     <br/>
                                                     <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="mybatis" disabled ></el-radio-button>
+                                                        <el-radio-button label="mybatis" disabled></el-radio-button>
                                                         <el-radio-button label="controller"></el-radio-button>
                                                         <el-radio-button label="service"></el-radio-button>
                                                         <el-radio-button label="service_impl"></el-radio-button>
@@ -456,27 +490,29 @@
                                                     </el-radio-group>
                                                     <br/>
                                                     <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="jpa" disabled ></el-radio-button>
+                                                        <el-radio-button label="jpa" disabled></el-radio-button>
                                                         <el-radio-button label="entity"></el-radio-button>
                                                         <el-radio-button label="repository"></el-radio-button>
                                                         <el-radio-button label="jpacontroller"></el-radio-button>
                                                     </el-radio-group>
                                                     <br/>
                                                     <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="jdbc-template" disabled ></el-radio-button>
+                                                        <el-radio-button label="jdbc-template"
+                                                                         disabled></el-radio-button>
                                                         <el-radio-button label="jtdao"></el-radio-button>
                                                         <el-radio-button label="jtdaoimpl"></el-radio-button>
                                                     </el-radio-group>
                                                     <br/>
                                                     <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="beetlsql" disabled ></el-radio-button>
+                                                        <el-radio-button label="beetlsql" disabled></el-radio-button>
                                                         <el-radio-button label="beetlmd"></el-radio-button>
                                                         <el-radio-button label="beetlentity"></el-radio-button>
                                                         <el-radio-button label="beetlcontroller"></el-radio-button>
                                                     </el-radio-group>
                                                     <br/>
                                                     <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="mybatis-plus" disabled ></el-radio-button>
+                                                        <el-radio-button label="mybatis-plus"
+                                                                         disabled></el-radio-button>
                                                         <el-radio-button label="pluscontroller"></el-radio-button>
                                                         <el-radio-button label="plusservice"></el-radio-button>
                                                         <el-radio-button label="plusmapper"></el-radio-button>
@@ -484,7 +520,7 @@
                                                     </el-radio-group>
                                                     <br/>
                                                     <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="util" disabled ></el-radio-button>
+                                                        <el-radio-button label="util" disabled></el-radio-button>
                                                         <el-radio-button label="beanutil"></el-radio-button>
                                                         <el-radio-button label="json"></el-radio-button>
                                                         <el-radio-button label="xml"></el-radio-button>
@@ -493,13 +529,14 @@
                                                     </el-radio-group>
                                                     <br/>
                                                     <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="common-mapper" disabled ></el-radio-button>
+                                                        <el-radio-button label="common-mapper"
+                                                                         disabled></el-radio-button>
                                                         <el-radio-button label="tkentity"></el-radio-button>
                                                         <el-radio-button label="tkmapper"></el-radio-button>
                                                     </el-radio-group>
                                                     <br/>
                                                     <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="renren-fast" disabled ></el-radio-button>
+                                                        <el-radio-button label="renren-fast" disabled></el-radio-button>
                                                         <el-radio-button label="menu-sql"></el-radio-button>
                                                         <el-radio-button label="vue-list"></el-radio-button>
                                                         <el-radio-button label="vue-edit"></el-radio-button>
@@ -510,23 +547,25 @@
                                                     </el-radio-group>
                                                     <br/>
                                                     <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="jpa-starp" disabled ></el-radio-button>
+                                                        <el-radio-button label="jpa-starp" disabled></el-radio-button>
                                                         <el-radio-button label="starp-entity"></el-radio-button>
                                                         <el-radio-button label="starp-repository"></el-radio-button>
                                                         <el-radio-button label="starp-jpa-controller"></el-radio-button>
                                                     </el-radio-group>
                                                     <br/>
                                                     <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="bi" disabled ></el-radio-button>
+                                                        <el-radio-button label="bi" disabled></el-radio-button>
                                                         <el-radio-button label="qliksense"></el-radio-button>
                                                     </el-radio-group>
+                                                    <br/>
                                                     <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="cloud" disabled ></el-radio-button>
+                                                        <el-radio-button label="cloud" disabled></el-radio-button>
                                                         <el-radio-button label="bigquery"></el-radio-button>
                                                         <el-radio-button label="dataflowjjs"></el-radio-button>
                                                     </el-radio-group>
+                                                    <br/>
                                                     <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="tk-mybatis" disabled ></el-radio-button>
+                                                        <el-radio-button label="tk-mybatis" disabled></el-radio-button>
                                                         <el-radio-button label="tk-entity"></el-radio-button>
                                                         <el-radio-button label="tk-mapper"></el-radio-button>
                                                         <el-radio-button label="tk-controller"></el-radio-button>
@@ -544,8 +583,12 @@
                                                                @click="outputToggleExpand"></el-button>
                                                 </div>
                                                 <div v-show="isOutputExpanded" class="content">
-                                                    <prism-editor line-numbers class="my-editor height-200"
-                                                                  v-model="outputContent"
+                                                    <el-button class="btn" size="mini" @click="copyHtml"
+                                                               data-clipboard-target="#outputContent">复制
+                                                    </el-button>
+                                                    <br/>
+                                                    <prism-editor class="my-editor height-200"
+                                                                  v-model="outputContent" id="outputContent"
                                                                   :highlight="highlighter" readonly></prism-editor>
                                                 </div>
                                             </el-card-collapse>
@@ -626,16 +669,12 @@
         el: '#app',
         data() {
             return {
+                //头部默认选项
                 activeIndex: '3',
-                form: {
-                    dataBase: '',
-                    tableName: '',
-                    tableComment: '',
-                    analogNumber: 0,
-                    dynamicItem: []
-                },
+
+                //代码生成的数据
+                inputSql: null,
                 generateSettingsForm: {
-                    inputSql: null,
                     author: "jerryMouse",
                     packageName: "com.jerrymouse.generator",
                     returnSuccess: "ReturnT.success",
@@ -644,7 +683,7 @@
                     inputType: 1,
                     tinyIntChange: 4,
                     dateChange: 1,
-                    namedType: 1,
+                    nameType: 1,
                     packagingType: true,
                     swaggerUI: false,
                     fieldComment: true,
@@ -658,6 +697,99 @@
                 isOutputExpanded: true,
                 outputContent: "com.jerrymouse.generator",
                 isCollapse: true,
+                inputTypeList: [
+                    {
+                        value: 1,
+                        label: 'DDL SQL'
+                    },
+                    {
+                        value: 2,
+                        label: 'JSON'
+                    },
+                    {
+                        value: 3,
+                        label: 'INSERT SQL'
+                    },
+                ],
+                tinyIntChangeList: [
+                    {
+                        value: 1,
+                        label: 'boolean'
+                    },
+                    {
+                        value: 2,
+                        label: 'Boolean'
+                    },
+                    {
+                        value: 3,
+                        label: 'Integer'
+                    },
+                    {
+                        value: 4,
+                        label: 'int'
+                    },
+                    {
+                        value: 5,
+                        label: 'String'
+                    },
+                    {
+                        value: 6,
+                        label: 'Short'
+                    },
+                ],
+                dateChangeList: [
+                    {
+                        value: 1,
+                        label: 'Date'
+                    },
+                    {
+                        value: 2,
+                        label: 'DateTime'
+                    },
+                    {
+                        value: 3,
+                        label: 'Time'
+                    },
+                    {
+                        value: 4,
+                        label: 'Timestamp'
+                    },
+                    {
+                        value: 5,
+                        label: 'Calendar'
+                    },
+                    {
+                        value: 6,
+                        label: 'LocalDate'
+                    },
+                    {
+                        value: 7,
+                        label: 'LocalDateTime'
+                    },
+                    {
+                        value: 8,
+                        label: 'LocalTime'
+                    },
+                ],
+                nameTypeList: [
+                    {
+                        value: 1,
+                        label: '驼峰'
+                    },
+                    {
+                        value: 2,
+                        label: '下划线'
+                    },
+                ],
+
+                //ddl与dml生成数据
+                form: {
+                    dataBase: '',
+                    tableName: '',
+                    tableComment: '',
+                    analogNumber: 0,
+                    dynamicItem: []
+                },
                 db_type_value: 1,
                 db_type_list: [
                     {
@@ -726,6 +858,7 @@
                     },
 
                 ],
+                //通用字段数据
                 universalize_list: [
                     {
                         columnName: 'id',
@@ -800,12 +933,13 @@
                         simulationValue: null,
                     }
                 ],
+
+                //ddl与dml等其他数据生成后的信息
                 result_ddl: null,
                 result_dml: null,
                 result_table_data: [],
                 result_head_data: [],
-                result_json: null,
-                result_java: null,
+                result_json: null
             };
         },
         methods: {
@@ -942,7 +1076,7 @@
             oneKeyGeneration() {
                 this.generateDDL()
                 this.generateDML()
-                this.generateJava()
+                this.generateCode()
             },
             generateDDL() {
                 fetch("/table/generateDDL", {
@@ -955,7 +1089,7 @@
                     .then(data => {
                         console.log(data)
                         this.result_ddl = data.data.ddl
-                        this.generateSettingsForm.inputSql = data.data.ddl
+                        this.inputSql = data.data.ddl
                     })
                     .catch((error) => {
                         console.error('Error:', error);
@@ -979,13 +1113,16 @@
                         console.error('Error:', error);
                     })
             },
-            generateJava() {
-                fetch("/table/generateJava", {
+            generateCode() {
+                fetch("/table/generateCode", {
                     method: 'POST', // 或者 'PUT'，取决于你的 API 要求
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(this.form)
+                    body: JSON.stringify({
+                        tableSql: this.inputSql,
+                        options: this.generateSettingsForm
+                    })
                 }).then(response => response.json())
                     .then(data => {
                         this.result_java = marked.parse(data.data.java)
@@ -1068,6 +1205,24 @@
                 }
                 this.result_dml = ''
                 this.result_ddl = ''
+                this.inputSql = null
+                this.generateSettingsForm = {
+                    author: "jerryMouse",
+                    packageName: "com.jerrymouse.generator",
+                    returnSuccess: "ReturnT.success",
+                    returnError: "ReturnT.error",
+                    ignorePrefix: "sys_",
+                    inputType: 1,
+                    tinyIntChange: 4,
+                    dateChange: 1,
+                    nameType: 1,
+                    packagingType: true,
+                    swaggerUI: false,
+                    fieldComment: true,
+                    automaticPackage: false,
+                    packedPath: false,
+                    lombok: true
+                }
             },
         }
     });
