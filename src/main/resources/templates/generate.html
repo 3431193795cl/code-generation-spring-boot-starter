@@ -469,16 +469,7 @@
                                                                @click="moduleToggleExpand"></el-button>
                                                 </div>
                                                 <div v-show="isModuleExpanded" class="content">
-                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="ui" disabled></el-radio-button>
-                                                        <el-radio-button label="swagger-ui"></el-radio-button>
-                                                        <el-radio-button label="element-ui"></el-radio-button>
-                                                        <el-radio-button label="bootstrap-ui"></el-radio-button>
-                                                        <el-radio-button label="layui-edit"></el-radio-button>
-                                                        <el-radio-button label="layui-list"></el-radio-button>
-                                                    </el-radio-group>
-                                                    <br/>
-                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                    <el-radio-group @input="agreeChange" v-model="generateSettingsForm.module" size="small">
                                                         <el-radio-button label="mybatis" disabled></el-radio-button>
                                                         <el-radio-button label="controller"></el-radio-button>
                                                         <el-radio-button label="service"></el-radio-button>
@@ -489,28 +480,28 @@
                                                         <el-radio-button label="mapper2"></el-radio-button>
                                                     </el-radio-group>
                                                     <br/>
-                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                    <el-radio-group @input="agreeChange" v-model="generateSettingsForm.module" size="small">
                                                         <el-radio-button label="jpa" disabled></el-radio-button>
                                                         <el-radio-button label="entity"></el-radio-button>
                                                         <el-radio-button label="repository"></el-radio-button>
                                                         <el-radio-button label="jpacontroller"></el-radio-button>
                                                     </el-radio-group>
                                                     <br/>
-                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                    <el-radio-group @input="agreeChange" v-model="generateSettingsForm.module" size="small">
                                                         <el-radio-button label="jdbc-template"
                                                                          disabled></el-radio-button>
                                                         <el-radio-button label="jtdao"></el-radio-button>
                                                         <el-radio-button label="jtdaoimpl"></el-radio-button>
                                                     </el-radio-group>
                                                     <br/>
-                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                    <el-radio-group @input="agreeChange" v-model="generateSettingsForm.module" size="small">
                                                         <el-radio-button label="beetlsql" disabled></el-radio-button>
                                                         <el-radio-button label="beetlmd"></el-radio-button>
                                                         <el-radio-button label="beetlentity"></el-radio-button>
                                                         <el-radio-button label="beetlcontroller"></el-radio-button>
                                                     </el-radio-group>
                                                     <br/>
-                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                    <el-radio-group @input="agreeChange" v-model="generateSettingsForm.module" size="small">
                                                         <el-radio-button label="mybatis-plus"
                                                                          disabled></el-radio-button>
                                                         <el-radio-button label="pluscontroller"></el-radio-button>
@@ -519,57 +510,23 @@
                                                         <el-radio-button label="plusentity"></el-radio-button>
                                                     </el-radio-group>
                                                     <br/>
-                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="util" disabled></el-radio-button>
-                                                        <el-radio-button label="beanutil"></el-radio-button>
-                                                        <el-radio-button label="json"></el-radio-button>
-                                                        <el-radio-button label="xml"></el-radio-button>
-                                                        <el-radio-button label="sql"></el-radio-button>
-                                                        <el-radio-button label="swagger-yml"></el-radio-button>
-                                                    </el-radio-group>
-                                                    <br/>
-                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                    <el-radio-group @input="agreeChange" v-model="generateSettingsForm.module" size="small">
                                                         <el-radio-button label="common-mapper"
                                                                          disabled></el-radio-button>
                                                         <el-radio-button label="tkentity"></el-radio-button>
                                                         <el-radio-button label="tkmapper"></el-radio-button>
                                                     </el-radio-group>
                                                     <br/>
-                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="renren-fast" disabled></el-radio-button>
-                                                        <el-radio-button label="menu-sql"></el-radio-button>
-                                                        <el-radio-button label="vue-list"></el-radio-button>
-                                                        <el-radio-button label="vue-edit"></el-radio-button>
-                                                        <el-radio-button label="rr-controller"></el-radio-button>
-                                                        <el-radio-button label="rr-dao"></el-radio-button>
-                                                        <el-radio-button label="rr-daoxml"></el-radio-button>
-                                                        <el-radio-button label="rr-service"></el-radio-button>
-                                                    </el-radio-group>
-                                                    <br/>
-                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="jpa-starp" disabled></el-radio-button>
-                                                        <el-radio-button label="starp-entity"></el-radio-button>
-                                                        <el-radio-button label="starp-repository"></el-radio-button>
-                                                        <el-radio-button label="starp-jpa-controller"></el-radio-button>
-                                                    </el-radio-group>
-                                                    <br/>
-                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                    <el-radio-group @input="agreeChange" v-model="generateSettingsForm.module" size="small">
                                                         <el-radio-button label="bi" disabled></el-radio-button>
                                                         <el-radio-button label="qliksense"></el-radio-button>
                                                     </el-radio-group>
                                                     <br/>
-                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
+                                                    <el-radio-group @input="agreeChange" v-model="generateSettingsForm.module" size="small">
                                                         <el-radio-button label="cloud" disabled></el-radio-button>
                                                         <el-radio-button label="bigquery"></el-radio-button>
                                                         <el-radio-button label="dataflowjjs"></el-radio-button>
-                                                    </el-radio-group>
-                                                    <br/>
-                                                    <el-radio-group v-model="generateSettingsForm.module" size="small">
-                                                        <el-radio-button label="tk-mybatis" disabled></el-radio-button>
-                                                        <el-radio-button label="tk-entity"></el-radio-button>
-                                                        <el-radio-button label="tk-mapper"></el-radio-button>
-                                                        <el-radio-button label="tk-controller"></el-radio-button>
-                                                    </el-radio-group>
+                                                    </el-radio-group>`
                                                 </div>
                                             </el-card-collapse>
                                             <br/>
@@ -937,6 +894,7 @@
                 //ddl与dml等其他数据生成后的信息
                 result_ddl: null,
                 result_dml: null,
+                result_java: {},
                 result_table_data: [],
                 result_head_data: [],
                 result_json: null
@@ -1004,6 +962,12 @@
                         console.error('Parent element not found');
                     }
                 });
+            },
+            agreeChange(){
+                console.log(this.generateSettingsForm.module);
+                if (this.generateSettingsForm.module) {
+                    this.outputContent = this.result_java[this.generateSettingsForm.module];
+                }
             },
             outputToggleExpand() {
                 this.isOutputExpanded = !this.isOutputExpanded;
@@ -1125,7 +1089,7 @@
                     })
                 }).then(response => response.json())
                     .then(data => {
-                        this.result_java = marked.parse(data.data.java)
+                        this.result_java = data.data
                     })
                     .catch((error) => {
                         console.error('Error:', error);

@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.mifmif.common.regex.Generex;
+import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
@@ -11,6 +12,7 @@ import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
 import org.jerry.code.business.dto.GenerateCodeDTO;
+import org.jerry.code.business.dto.TableInfoDTO;
 import org.jerry.code.business.service.IOperateTableService;
 import org.jerry.code.config.CodeGenerationProperties;
 import org.jerry.code.toolkit.constant.SimulationType;
@@ -18,10 +20,7 @@ import org.jerry.code.toolkit.constant.SimulationValue;
 import org.jerry.code.business.dto.DynamicItemDTO;
 import org.jerry.code.business.dto.GenerateDTO;
 import org.jerry.code.business.service.ISaveTableService;
-import org.jerry.code.toolkit.tool.DDLAnalysisTool;
-import org.jerry.code.toolkit.tool.RandDataTool;
-import org.jerry.code.toolkit.tool.RandomIDGenerator;
-import org.jerry.code.toolkit.tool.StringTool;
+import org.jerry.code.toolkit.tool.*;
 import org.jerry.code.business.vo.DMLVo;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,11 +29,14 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -43,6 +45,8 @@ public class SaveTableServiceImpl implements ISaveTableService {
     @Resource
     private JdbcTemplate jdbcTemplate;
 
+    @Resource
+    private FreemarkerTool freemarkerTool;
 
     @Override
     public Boolean saveTable(String tableName) {
@@ -283,8 +287,52 @@ public class SaveTableServiceImpl implements ISaveTableService {
     }
 
     @Override
-    public JSONObject generateCode(GenerateCodeDTO generateCodeDTO) {
+    public Map<String, String> generateCode(GenerateCodeDTO generateCodeDTO) {
         log.info("generateCodeDTO:{}", JSON.toJSONString(generateCodeDTO));
-        return null;
+        if (StringUtils.isEmpty(generateCodeDTO.getTableSql())) {
+            throw new RuntimeException("请输入建表语句");
+        }
+        //1.表结构解析
+        GenerateDTO generateDTO = TableParseTool.processTableIntoGenerateDTO(generateCodeDTO);
+
+        //2.Set the params 设置表格参数
+
+        generateCodeDTO.getOptions().setClassInfo(generateDTO);
+        generateCodeDTO.getOptions().setTableName(generateDTO == null ? String.valueOf(System.currentTimeMillis()) : generateDTO.getTableName());
+
+        //3.generate the code by freemarker templates with parameters . Freemarker根据参数和模板生成代码\
+        try {
+            return getResultByParams(generateCodeDTO.getOptions());
+        } catch (Exception e) {
+            log.error("generateCode error:{}", e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public Map<String, String> getResultByParams(TableInfoDTO params) throws IOException, TemplateException {
+        Map<String, String> result = new HashMap<>(32);
+        result.put("tableName", params.getTableName());
+        JSONArray parentTemplates = JSONArray.parseArray(getTemplateConfig());
+        for (int i = 0; i < parentTemplates.size(); i++) {
+            JSONObject parentTemplateObj = parentTemplates.getJSONObject(i);
+            for (int x = 0; x < parentTemplateObj.getJSONArray("templates").size(); x++) {
+                JSONObject childTemplate = parentTemplateObj.getJSONArray("templates").getJSONObject(x);
+                result.put(childTemplate.getString("name"), freemarkerTool.generateFromTemplate(parentTemplateObj.getString("group") + "/" + childTemplate.getString("name") + ".ftl", JSON.parseObject(JSON.toJSONString(params), Map.class)));
+            }
+        }
+        return result;
+    }
+
+    public String getTemplateConfig() throws IOException {
+        String templateCpnfig = null;
+        if (templateCpnfig != null) {
+        } else {
+            InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("template.json");
+            templateCpnfig = new BufferedReader(new InputStreamReader(inputStream))
+                    .lines().collect(Collectors.joining(System.lineSeparator()));
+            inputStream.close();
+        }
+        //log.info(JSON.toJSONString(templateCpnfig));
+        return templateCpnfig;
     }
 }

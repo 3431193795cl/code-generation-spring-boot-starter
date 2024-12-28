@@ -12,5 +12,4 @@ public class GenerateCodeDTO implements Serializable {
     private String tableSql;
 
     private TableInfoDTO options;
-
 }

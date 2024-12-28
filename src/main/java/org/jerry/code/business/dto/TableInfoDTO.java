@@ -83,4 +83,15 @@ public class TableInfoDTO implements Serializable {
      * lombok
      */
     private Boolean lombok;
+
+
+    /**
+     * 表信息
+     */
+    private GenerateDTO classInfo;
+
+    /**
+     * 表名
+     */
+    private String tableName;
 }

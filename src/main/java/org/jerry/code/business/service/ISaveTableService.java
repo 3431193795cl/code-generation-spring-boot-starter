@@ -5,6 +5,8 @@ import org.jerry.code.business.dto.GenerateCodeDTO;
 import org.jerry.code.business.dto.GenerateDTO;
 import org.jerry.code.business.vo.DMLVo;
 
+import java.util.Map;
+
 public interface ISaveTableService {
 
     Boolean saveTable(String tableName);
@@ -35,5 +37,5 @@ public interface ISaveTableService {
      * @param generateCodeDTO
      * @return
      */
-    JSONObject generateCode(GenerateCodeDTO generateCodeDTO);
+    Map<String,String> generateCode(GenerateCodeDTO generateCodeDTO);
 }

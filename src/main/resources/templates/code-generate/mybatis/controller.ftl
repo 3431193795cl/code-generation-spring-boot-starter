@@ -1,0 +1,1 @@
+<#if isWithPackage?exists && isWithPackage==true>package ${packageName}.controller;</#if>

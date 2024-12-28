@@ -16,9 +16,19 @@ public class GenerateDTO implements Serializable {
     private String dataBase;
 
     /**
+     * 原始表名
+     */
+    private String originTableName;
+
+    /**
      * 表名
      */
     private String tableName;
+
+    /**
+     * 类名
+     */
+    private String className;
 
     /**
      * 生成数量
@@ -29,6 +39,11 @@ public class GenerateDTO implements Serializable {
      * 表注释
      */
     private String tableComment;
+
+    /**
+     * 类注释
+     */
+    private String classComment;
 
     /**
      * 动态字段

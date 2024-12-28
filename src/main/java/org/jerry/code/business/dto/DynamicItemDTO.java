@@ -15,14 +15,29 @@ public class DynamicItemDTO implements Serializable {
     private String columnName;
 
     /**
+     * 字段名
+     */
+    private String fieldName;
+
+    /**
      * 字段类型
      */
     private String fieldType;
 
     /**
+     * java类型
+     */
+    private String fieldClass;
+
+    /**
      * 默认值
      */
     private String fieldDefault;
+
+    /**
+     * swagger类型
+     */
+    private String swaggerClass;
 
     /**
      * 注释

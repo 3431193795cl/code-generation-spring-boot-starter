@@ -1,0 +1,157 @@
+[
+  {
+    "group": "mybatis",
+    "templates": [{
+      "id": "20",
+      "name": "controller",
+      "description": "controller"
+    },
+      {
+        "id": "21",
+        "name": "service",
+        "description": "service"
+      },
+      {
+        "id": "22",
+        "name": "service_impl",
+        "description": "service_impl"
+      },
+      {
+        "id": "23",
+        "name": "mapper",
+        "description": "mapper"
+      },
+      {
+        "id": "24",
+        "name": "mybatis",
+        "description": "mybatis"
+      },
+      {
+        "id": "25",
+        "name": "model",
+        "description": "model"
+      },
+      {
+        "id": "26",
+        "name": "mapper2",
+        "description": "mapper annotation"
+      }
+    ]
+  },
+  {
+    "group": "jpa",
+    "templates": [{
+      "id": "30",
+      "name": "entity",
+      "description": "entity"
+    },
+      {
+        "id": "31",
+        "name": "repository",
+        "description": "repository"
+      },
+      {
+        "id": "32",
+        "name": "jpacontroller",
+        "description": "jpacontroller"
+      }
+    ]
+  },
+
+  {
+    "group": "jdbc-template",
+    "templates": [{
+      "id": "40",
+      "name": "jtdao",
+      "description": "jtdao"
+    },
+      {
+        "id": "41",
+        "name": "jtdaoimpl",
+        "description": "jtdaoimpl"
+      }
+    ]
+  },
+
+  {
+    "group": "beetlsql",
+    "templates": [{
+      "id": "50",
+      "name": "beetlmd",
+      "description": "beetlmd"
+    },
+      {
+        "id": "51",
+        "name": "beetlentity",
+        "description": "beetlentity"
+      },
+      {
+        "id": "52",
+        "name": "beetlcontroller",
+        "description": "beetlcontroller"
+      }
+    ]
+  },
+
+  {
+    "group": "mybatis-plus",
+    "templates": [{
+      "id": "60",
+      "name": "pluscontroller",
+      "description": "pluscontroller"
+    },
+      {
+        "id": "61",
+        "name": "plusservice",
+        "description": "plusservice"
+      },
+      {
+        "id": "62",
+        "name": "plusmapper",
+        "description": "plusmapper"
+      },
+      {
+        "id": "63",
+        "name": "plusentity",
+        "description": "plusentity"
+      }
+    ]
+  },
+  {
+    "group": "common-mapper",
+    "templates": [{
+      "id": "81",
+      "name": "tkentity",
+      "description": "tkentity"
+    },
+      {
+        "id": "82",
+        "name": "tkmapper",
+        "description": "tkmapper"
+      }
+    ]
+  },
+  {
+    "group": "bi",
+    "templates": [{
+      "id": "201",
+      "name": "qliksense",
+      "description": "qlik sense"
+    }]
+  },
+  {
+    "group": "cloud",
+    "templates": [
+      {
+        "id": "301",
+        "name": "bigquery",
+        "description": "GCP BigQuery"
+      },
+      {
+        "id": "302",
+        "name": "dataflowjjs",
+        "description": "GCP Dataflow JJS"
+      }
+    ]
+  }
+]
