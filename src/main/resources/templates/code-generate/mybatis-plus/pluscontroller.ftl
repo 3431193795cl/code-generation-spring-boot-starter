@@ -155,4 +155,3 @@ public class ${classInfo.className}Controller {
         return ${returnSuccess};
     }
 }
-}
