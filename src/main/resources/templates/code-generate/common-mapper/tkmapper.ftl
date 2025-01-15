@@ -1,6 +1,6 @@
-<#if isWithPackage?exists && isWithPackage==true>package ${packageName}.mapper;</#if>
+<#if packagingType?exists && packagingType==true>package ${packageName}.mapper;</#if>
 
-<#if isAutoImport?exists && isAutoImport==true>
+<#if automaticPackage?exists && automaticPackage==true>
 import tk.mybatis.mapper.common.Mapper;
 import org.apache.ibatis.annotations.Mapper;
 import ${packageName}.entity.${classInfo.className};

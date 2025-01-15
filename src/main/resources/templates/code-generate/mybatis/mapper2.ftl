@@ -1,6 +1,6 @@
-<#if isWithPackage?exists && isWithPackage==true>package ${packageName}.mapper;</#if>\
+<#if packagingType?exists && packagingType==true>package ${packageName}.mapper;</#if>\
 
-<#if isAutoImport?exists && isAutoImport == true>
+<#if automaticPackage?exists && automaticPackage == true>
 import java.util.List;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;

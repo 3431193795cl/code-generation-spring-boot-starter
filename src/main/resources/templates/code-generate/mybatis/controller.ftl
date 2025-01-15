@@ -1,6 +1,6 @@
-<#if isWithPackage?exists && isWithPackage==true>package ${packageName}.controller;</#if>
+<#if packagingType?exists && packagingType==true>package ${packageName}.controller;</#if>
 
-<#if isAutoImport?exists && isAutoImport==true>
+<#if automaticPackage?exists && automaticPackage==true>
 import com.alibaba.fastjson.JSON;
 import ${packageName}.entity.${classInfo.className};
 import ${packageName}.service.${classInfo.className}Service;

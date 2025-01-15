@@ -628,24 +628,38 @@
             return {
                 //头部默认选项
                 activeIndex: '3',
-
                 //代码生成的数据
                 inputSql: null,
                 generateSettingsForm: {
+                    //作者
                     author: "jerryMouse",
+                    //包名
                     packageName: "com.jerrymouse.generator",
+                    //成功返回
                     returnSuccess: "ReturnT.success",
+                    //失败返回
                     returnError: "ReturnT.error",
+                    //忽略表前缀
                     ignorePrefix: "sys_",
+                    //输入类型
                     inputType: 1,
+                    //TinyInt转换
                     tinyIntChange: 4,
+                    //时间类型
                     dateChange: 1,
+                    //命名类型
                     nameType: 1,
+                    // 是否展示包装类型
                     packagingType: true,
+                    // 是否展示swaggerUI
                     swaggerUI: false,
+                    // 是否展示字段注释
                     fieldComment: true,
+                    // 是否自动生成包路径
                     automaticPackage: false,
+                    // 带包路径
                     packedPath: false,
+                    // 是否使用lombok
                     lombok: true
                 },
                 isSqlExpanded: true,
@@ -964,7 +978,6 @@
                 });
             },
             agreeChange(){
-                console.log(this.generateSettingsForm.module);
                 if (this.generateSettingsForm.module) {
                     this.outputContent = this.result_java[this.generateSettingsForm.module];
                 }

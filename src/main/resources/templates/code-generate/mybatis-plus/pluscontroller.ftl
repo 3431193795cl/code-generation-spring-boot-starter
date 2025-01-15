@@ -1,5 +1,5 @@
-<#if isWithPackage?exists && isWithPackage==true>package ${packageName}.controller;</#if>
-<#if isAutoImport?exists && isAutoImport==true>
+<#if packagingType?exists && packagingType==true>package ${packageName}.controller;</#if>
+<#if automaticPackage?exists && automaticPackage==true>
 import com.alibaba.fastjson.JSON;
 import ${packageName}.entity.${classInfo.className};
 import ${packageName}.mapper.${classInfo.className}Mapper;

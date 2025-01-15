@@ -1,11 +1,11 @@
-<#if isWithPackage?exists && isWithPackage==true>package ${packageName}.entity;</#if>
+<#if packagingType?exists && packagingType==true>package ${packageName}.entity;</#if>
 
-<#if isAutoImport?exists && isAutoImport == true>
+<#if automaticPackage?exists && automaticPackage == true>
 import java.io.Serializable;
-<#if isLombok?exists && isLombok==true>import lombok.Data;</#if>
+<#if lombok?exists && lombok==true>import lombok.Data;</#if>
 import java.util.Date;
 import java.util.List;
-<#if isSwagger?exists && isSwagger == true>
+<#if swaggerUI?exists && swaggerUI == true>
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 </#if>
@@ -20,8 +20,8 @@ import javax.persistence.GeneratedValue;
  * @author ${author}
  * @date ${.now?date}
  */
-<#if isLombok?exists && isLombok==true>@Data</#if>
-<#if isSwagger?exists && isSwagger == true>
+<#if lombok?exists && lombok==true>@Data</#if>
+<#if swaggerUI?exists && swaggerUI == true>
 @ApiModel("${classInfo.classComment}")
 </#if>
 @Table(name="${classInfo.tableName}")
@@ -33,18 +33,18 @@ private static final long serialVersionUID = 1L;
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 <#if classInfo.dynamicItem?exists && classInfo.dynamicItem?size gt 0>
     <#list classInfo.dynamicItem as fieldItem >
-        <#if isComment?exists && isComment==true>
+        <#if fieldComment?exists && fieldComment==true>
             /**
             * ${fieldItem.fieldAnnotate}
             */
         </#if>
-        <#if isSwagger?exists && isSwagger == true>
+        <#if swaggerUI?exists && swaggerUI == true>
         @ApiModelProperty("${classInfo.classComment}")
         </#if>
         @Column(name="${fieldItem.columnName}")
         private ${fieldItem.fieldClass} ${fieldItem.fieldName};
     </#list>
-    <#if isLombok?exists && isLombok==false>
+    <#if lombok?exists && lombok==false>
     <#list classInfo.dynamicItem as fieldItem>
         public ${fieldItem.fieldClass} get${fieldItem.fieldName?cap_first}() {
             return ${fieldItem.fieldName};

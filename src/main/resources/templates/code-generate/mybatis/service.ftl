@@ -1,6 +1,6 @@
-<#if isWithPackage?exists && isWithPackage==true>package ${packageName}.service;</#if>
+<#if packagingType?exists && packagingType==true>package ${packageName}.service;</#if>
 
-<#if isAutoImport?exists && isAutoImport==true>
+<#if automaticPackage?exists && automaticPackage==true>
 import java.util.Map;
 import java.util.List;
 import ${packageName}.entity.${classInfo.className};

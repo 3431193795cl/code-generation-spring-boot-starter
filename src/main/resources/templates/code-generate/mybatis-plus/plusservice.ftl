@@ -1,5 +1,5 @@
-<#if isWithPackage?exists && isWithPackage==true>package ${packageName}.service;</#if>
-<#if isAutoImport?exists && isAutoImport==true>
+<#if packagingType?exists && packagingType==true>package ${packageName}.service;</#if>
+<#if automaticPackage?exists && automaticPackage==true>
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.IService;
 </#if>

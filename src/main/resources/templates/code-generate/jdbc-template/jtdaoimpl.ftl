@@ -1,6 +1,6 @@
-<#if isWithPackage?exists && isWithPackage==true>package ${packageName}.dao.impl;</#if>
+<#if packagingType?exists && packagingType==true>package ${packageName}.dao.impl;</#if>
 
-<#if isAutoImport?exists && isAutoImport==true>
+<#if automaticPackage?exists && automaticPackage==true>
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;

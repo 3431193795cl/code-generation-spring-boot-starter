@@ -1,13 +1,13 @@
-<#if isWithPackage?exists && isWithPackage==true>package ${packageName}.entity;</#if>
+<#if packagingType?exists && packagingType==true>package ${packageName}.entity;</#if>
 
-<#if isAutoImport?exists && isAutoImport==true>
-<#if isLombok?exists && isLombok==true>import lombok.Data;</#if>
+<#if automaticPackage?exists && automaticPackage==true>
+<#if lombok?exists && lombok==true>import lombok.Data;</#if>
 import java.util.Date;
 import java.util.List;
 import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-<#if isSwagger?exists && isSwagger==true>
+<#if swaggerUI?exists && swaggerUI==true>
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;</#if>
 </#if>
@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;</#if>
  * @author ${author}
  * @date ${.now?date}
  */
-<#if isLombok?exists && isLombok==true>@Data</#if><#if isSwagger?exists && isSwagger==true>
+<#if lombok?exists && lombok==true>@Data</#if><#if swaggerUI?exists && swaggerUI==true>
 @ApiModel("${classInfo.classComment}")</#if>
 public class ${classInfo.className} implements Serializable {
 
@@ -25,13 +25,13 @@ public class ${classInfo.className} implements Serializable {
     @TableId(type = IdType.AUTO)
 <#if classInfo.dynamicItem?exists && classInfo.dynamicItem?size gt 0>
 <#list classInfo.dynamicItem as fieldItem >
-    <#if isComment?exists && isComment==true>/**
+    <#if fieldComment?exists && fieldComment==true>/**
     * ${fieldItem.fieldAnnotate}
-    */</#if><#if isSwagger?exists && isSwagger==true>
+    */</#if><#if swaggerUI?exists && swaggerUI==true>
     @ApiModelProperty("${fieldItem.fieldAnnotate}")</#if>
     private ${fieldItem.fieldClass} ${fieldItem.fieldName};
 
-<#if isLombok?exists && isLombok==false>
+<#if lombok?exists && lombok==false>
     public ${fieldItem.fieldClass} get${fieldItem.fieldName?cap_first}() {
         return ${fieldItem.fieldName};
     }

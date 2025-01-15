@@ -1,6 +1,6 @@
-<#if isWithPackage?exists && isWithPackage==true>package ${packageName}.dao;</#if>
+<#if packagingType?exists && packagingType==true>package ${packageName}.dao;</#if>
 
-<#if isAutoImport?exists && isAutoImport==true>
+<#if automaticPackage?exists && automaticPackage==true>
 import ${packageName}.entity.${classInfo.className};
 import java.util.List;
 </#if>

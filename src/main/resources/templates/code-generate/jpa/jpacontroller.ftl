@@ -1,6 +1,6 @@
-<#if isWithPackage?exists && isWithPackage==true>package ${packageName}.controller;</#if>
+<#if packagingType?exists && packagingType==true>package ${packageName}.controller;</#if>
 
-<#if isAutoImport?exists && isAutoImport == true>
+<#if automaticPackage?exists && automaticPackage == true>
 import ${packageName}.entity.${classInfo.className};
 import ${packageName}.repository.${classInfo.className}Repository;
 import org.springframework.data.domain.Example;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-<#if isSwagger?exists && isSwagger == true>
+<#if swaggerUI?exists && swaggerUI == true>
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 </#if>
@@ -29,7 +29,7 @@ import io.swagger.annotations.ApiOperation;
  * @date ${.now?date}
  */
 @RestController
-<#if isSwagger?exists && isSwagger == true>
+<#if swaggerUI?exists && swaggerUI == true>
 @Api(tags="${classInfo.classComment}")
 </#if>
 @RequestMapping("/${classInfo.className?uncap_first}")
@@ -41,7 +41,7 @@ public class ${classInfo.className}Controller {
      * 新增或编辑
      */
     @PostMapping("/save")
-    <#if isSwagger?exists && isSwagger == true>
+    <#if swaggerUI?exists && swaggerUI == true>
     @ApiOperation(value = "新增或编辑")
     </#if>
     public Object save(${classInfo.className} ${classInfo.className?uncap_first}){
@@ -52,7 +52,7 @@ public class ${classInfo.className}Controller {
      * 删除
      */
     @DeleteMapping("/delete")
-    <#if isSwagger?exists && isSwagger == true>
+    <#if swaggerUI?exists && swaggerUI == true>
     @ApiOperation(value = "删除")
     </#if>
     public Object delete(int id){
@@ -69,7 +69,7 @@ public class ${classInfo.className}Controller {
      * 查询
      */
     @PostMapping("/find")
-    <#if isSwagger?exists && isSwagger == true>
+    <#if swaggerUI?exists && swaggerUI == true>
     @ApiOperation(value = "查询")
     </#if>
     public Object find(int id){
@@ -84,7 +84,7 @@ public class ${classInfo.className}Controller {
     /**
      * 分页查询
      */
-    <#if isSwagger?exists && isSwagger == true>
+    <#if swaggerUI?exists && swaggerUI == true>
     @ApiOperation(value = "分页查询")
     </#if>
     @PostMapping("/list")

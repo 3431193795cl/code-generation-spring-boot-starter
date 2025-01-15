@@ -1,5 +1,5 @@
-<#if isWithPackage?exists && isWithPackage==true>package ${packageName}.repository;</#if>
-<#if isAutoImport?exists && isAutoImport == true>
+<#if packagingType?exists && packagingType==true>package ${packageName}.repository;</#if>
+<#if automaticPackage?exists && automaticPackage == true>
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
